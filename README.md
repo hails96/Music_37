@@ -1,5 +1,7 @@
-### Member Lương Sơn Hải
+## Member Lương Sơn Hải
 
-### Start date : 13/09/2018
+## Trainer Doãn Văn Toản
 
-### Demo: 01/10/2018
+## Start date : 13/09/2018
+
+## Demo: 01/10/2018
