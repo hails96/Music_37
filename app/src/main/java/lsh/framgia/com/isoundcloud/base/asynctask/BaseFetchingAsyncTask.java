@@ -53,6 +53,6 @@ public abstract class BaseFetchingAsyncTask<R> extends AsyncTask<String, Void, R
     public interface OnResponseListener {
         <R> void onSuccess(@Nullable R result);
 
-        void onError(@Nullable Exception e);
+        void onError(Exception e);
     }
 }

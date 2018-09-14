@@ -22,12 +22,6 @@ public abstract class BaseFragment<P extends IPresenter> extends Fragment implem
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mPresenter.start();
-    }
-
-    @Override
     public void setPresenter(P presenter) {
         mPresenter = presenter;
         mPresenter.setView(this);
