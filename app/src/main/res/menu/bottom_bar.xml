@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_home"
+        android:title="@string/label_home"
+        android:icon="@drawable/ic_home" />
+    <item android:id="@+id/action_settings"
+        android:title="@string/label_downloaded"
+        android:icon="@drawable/ic_cloud_download" />
+    <item android:id="@+id/action_navigation"
+        android:title="@string/label_library"
+        android:icon="@drawable/ic_library" />
+</menu>

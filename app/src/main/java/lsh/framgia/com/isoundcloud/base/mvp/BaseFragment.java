@@ -13,6 +13,10 @@ public abstract class BaseFragment<P extends IPresenter> extends Fragment implem
     protected P mPresenter;
     protected View mRootView;
 
+    public BaseFragment() {
+        // Require empty constructor
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -24,7 +28,7 @@ public abstract class BaseFragment<P extends IPresenter> extends Fragment implem
     @Override
     public void setPresenter(P presenter) {
         mPresenter = presenter;
-        mPresenter.setView(this);
+        mPresenter.start();
     }
 
     protected abstract int getLayoutId();

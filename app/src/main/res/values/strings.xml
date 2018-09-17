@@ -1,5 +1,10 @@
 <resources>
-    <string name="app_name">iSoundcloud</string>
-    <string name="channel_name">iSoundcloud</string>
-    <string name="channel_description">A notification channel of iSoundcloud</string>
+    <string name="app_name">iSoundCloud</string>
+    <string name="channel_name">iSoundCloud</string>
+    <string name="channel_description">A notification channel of iSoundCloud</string>
+    <string name="label_home">Home</string>
+    <string name="label_downloaded">Downloaded</string>
+    <string name="label_library">Library</string>
+    <string name="label_recently_downloaded">Recently downloaded</string>
+    <string name="label_genres">Genres</string>
 </resources>
