@@ -7,4 +7,11 @@
     <string name="label_library">Library</string>
     <string name="label_recently_downloaded">Recently downloaded</string>
     <string name="label_genres">Genres</string>
+    <string name="label_all_music">All Music</string>
+    <string name="label_all_audio">All Audio</string>
+    <string name="label_alternative_rock">Alternative Rock</string>
+    <string name="label_ambient">Ambient</string>
+    <string name="label_classical">Classical</string>
+    <string name="label_country">Country</string>
+    <string name="desc_no_song_available">No song available!</string>
 </resources>
