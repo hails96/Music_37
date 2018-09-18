@@ -7,7 +7,7 @@
     tools:context=".screen.main.MainActivity">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbar_genre"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/color_primary"
@@ -19,10 +19,10 @@
         tools:targetApi="lollipop">
 
         <TextView
-            android:id="@+id/text_toolbar_title"
+            android:id="@+id/text_toolbar_genre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="center_horizontal"
             android:text="@string/app_name"
             android:textColor="@android:color/white"
             android:textSize="@dimen/sp_18"
@@ -36,7 +36,7 @@
         app:layout_constraintBottom_toTopOf="@id/layout_mini_player"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_genre" />
 
     <include
         android:id="@+id/layout_mini_player"
@@ -55,7 +55,6 @@
         android:background="?android:attr/windowBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_bar" />
+        app:menu="@menu/bottom_bar_main" />
 </android.support.constraint.ConstraintLayout>
