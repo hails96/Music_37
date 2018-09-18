@@ -28,7 +28,18 @@ public abstract class BaseFragment<P extends IPresenter> extends Fragment implem
     @Override
     public void setPresenter(P presenter) {
         mPresenter = presenter;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         mPresenter.start();
+    }
+
+    protected void replaceFragment(int containerId, Fragment fragment,
+                                   boolean addToBackStack, String tag) {
+        if (getActivity() == null) return;
+        ((BaseActivity) getActivity()).replaceFragment(containerId, fragment, addToBackStack, tag);
     }
 
     protected abstract int getLayoutId();

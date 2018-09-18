@@ -27,11 +27,12 @@ public abstract class BaseActivity<P extends IPresenter> extends AppCompatActivi
 
     protected abstract void initLayout();
 
-    protected void replaceFragment(int containerId, Fragment fragment,
-                                   boolean addToBackStack, String tag) {
+    public void replaceFragment(int containerId, Fragment fragment,
+                                boolean addToBackStack, String tag) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(containerId, fragment, fragment.getClass().getSimpleName());
         if (addToBackStack) transaction.addToBackStack(tag);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.commit();
     }
 }
