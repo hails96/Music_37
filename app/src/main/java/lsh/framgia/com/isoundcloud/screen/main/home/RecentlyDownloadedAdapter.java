@@ -23,11 +23,13 @@ public class RecentlyDownloadedAdapter extends RecyclerView.Adapter
     private Context mContext;
     private LayoutInflater mInflater;
     private List<Track> mTracks;
+    private OnTrackClickListener mOnTrackClickListener;
 
-    public RecentlyDownloadedAdapter(Context context, List<Track> tracks) {
+    public RecentlyDownloadedAdapter(Context context, List<Track> tracks, OnTrackClickListener listener) {
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
         mTracks = tracks;
+        mOnTrackClickListener = listener;
     }
 
     @NonNull
@@ -38,7 +40,7 @@ public class RecentlyDownloadedAdapter extends RecyclerView.Adapter
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bindData(mContext, mTracks.get(position));
+        holder.bindData(mContext, mTracks.get(position), mOnTrackClickListener);
     }
 
     @Override
@@ -59,7 +61,7 @@ public class RecentlyDownloadedAdapter extends RecyclerView.Adapter
             mTextArtist = itemView.findViewById(R.id.text_artist);
         }
 
-        private void bindData(Context context, Track track) {
+        private void bindData(Context context, final Track track, final OnTrackClickListener onTrackClickListener) {
             RequestOptions options = new RequestOptions().centerCrop()
                     .placeholder(R.drawable.ic_circle_place_holder)
                     .error(R.drawable.ic_circle_place_holder);
@@ -69,6 +71,17 @@ public class RecentlyDownloadedAdapter extends RecyclerView.Adapter
                     .into(mImageArtwork);
             mTextTitle.setText(track.getTitle());
             mTextArtist.setText(track.getArtist());
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onTrackClickListener != null) onTrackClickListener.onTrackClick(track);
+                }
+            });
         }
+    }
+
+    public interface OnTrackClickListener {
+        void onTrackClick(Track track);
     }
 }

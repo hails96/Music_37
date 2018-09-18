@@ -7,12 +7,15 @@ import android.support.v7.widget.RecyclerView;
 
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseFragment;
+import lsh.framgia.com.isoundcloud.data.Genre;
+import lsh.framgia.com.isoundcloud.screen.main.genre.GenreFragment;
+import lsh.framgia.com.isoundcloud.screen.main.genre.GenrePresenter;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends BaseFragment<HomeContract.Presenter>
-        implements HomeContract.View {
+public class HomeFragment extends BaseFragment<HomeContract.Presenter> implements HomeContract.View,
+        GenreAdapter.OnGenreClickListener {
 
     private static final int COLUMN_NUMBERS = 2;
     private static final int SPLIT_NUMBER = 3;
@@ -21,6 +24,7 @@ public class HomeFragment extends BaseFragment<HomeContract.Presenter>
 
     private RecyclerView mRecyclerRecentlyDownloaded;
     private RecyclerView mRecyclerGenre;
+
 
     public static HomeFragment newInstance() {
         return new HomeFragment();
@@ -35,6 +39,14 @@ public class HomeFragment extends BaseFragment<HomeContract.Presenter>
     protected void initLayout() {
         setupPreferences();
         setupRecyclers();
+    }
+
+    @Override
+    public void onGenreClick(Genre genre) {
+        GenreFragment genreFragment = GenreFragment.newInstance();
+        GenrePresenter genrePresenter = new GenrePresenter();
+        genrePresenter.setView(genreFragment);
+        replaceFragment(R.id.frame_container, genreFragment, true, Genre.class.getSimpleName());
     }
 
     private void setupRecyclers() {
@@ -52,7 +64,7 @@ public class HomeFragment extends BaseFragment<HomeContract.Presenter>
             }
         });
         mRecyclerGenre.setLayoutManager(gridLayoutManager);
-        mRecyclerGenre.setAdapter(new GenreAdapter(getContext(), mPresenter.getGenres()));
+        mRecyclerGenre.setAdapter(new GenreAdapter(getContext(), mPresenter.getGenres(), this));
     }
 
     private void setupPreferences() {

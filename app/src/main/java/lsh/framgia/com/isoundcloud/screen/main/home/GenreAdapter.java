@@ -19,11 +19,13 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.GenreViewHol
     private Context mContext;
     private LayoutInflater mInflater;
     private List<Genre> mGenres;
+    private OnGenreClickListener mOnGenreClickListener;
 
-    public GenreAdapter(Context context, List<Genre> genres) {
+    public GenreAdapter(Context context, List<Genre> genres, OnGenreClickListener onGenreClickListener) {
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
         mGenres = genres;
+        mOnGenreClickListener = onGenreClickListener;
     }
 
     @NonNull
@@ -34,7 +36,7 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.GenreViewHol
 
     @Override
     public void onBindViewHolder(@NonNull GenreViewHolder holder, int position) {
-        holder.bindData(mContext, mGenres.get(position));
+        holder.bindData(mContext, mGenres.get(position), mOnGenreClickListener);
     }
 
     @Override
@@ -53,9 +55,19 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.GenreViewHol
             mTextTitle = itemView.findViewById(R.id.text_title);
         }
 
-        void bindData(Context context, Genre genre) {
+        void bindData(Context context, final Genre genre, final OnGenreClickListener onGenreClickListener) {
             mImageArtwork.setImageResource(genre.getArtworkResId());
             mTextTitle.setText(context.getString(genre.getNameResId()));
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onGenreClickListener != null) onGenreClickListener.onGenreClick(genre);
+                }
+            });
         }
+    }
+
+    public interface OnGenreClickListener {
+        void onGenreClick(Genre genre);
     }
 }
