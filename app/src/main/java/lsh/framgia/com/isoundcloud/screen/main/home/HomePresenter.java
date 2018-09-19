@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import lsh.framgia.com.isoundcloud.base.mvp.BasePresenter;
-import lsh.framgia.com.isoundcloud.data.Genre;
+import lsh.framgia.com.isoundcloud.data.model.Genre;
 
 public class HomePresenter extends BasePresenter<HomeContract.View>
         implements HomeContract.Presenter {
