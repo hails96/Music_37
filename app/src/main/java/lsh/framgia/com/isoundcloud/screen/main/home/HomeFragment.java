@@ -45,7 +45,9 @@ public class HomeFragment extends BaseFragment<HomeContract.Presenter> implement
     public void onGenreClick(Genre genre) {
         GenreFragment genreFragment = GenreFragment.newInstance();
         GenrePresenter genrePresenter = new GenrePresenter();
-        genrePresenter.setView(genreFragment);
+        genrePresenter
+                .setGenre(genre)
+                .setView(genreFragment);
         replaceFragment(R.id.frame_container, genreFragment, true, Genre.class.getSimpleName());
     }
 

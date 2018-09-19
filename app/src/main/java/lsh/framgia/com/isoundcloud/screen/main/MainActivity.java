@@ -43,7 +43,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.toolbar, menu);
+        menuInflater.inflate(R.menu.toolbar_main, menu);
         return true;
     }
 
@@ -84,7 +84,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
     }
 
     private void setupReferences() {
-        mToolbar = findViewById(R.id.toolbar);
+        mToolbar = findViewById(R.id.toolbar_genre);
         mBottomNavigation = findViewById(R.id.bottom_navigation);
     }
 
