@@ -1,7 +1,12 @@
 package lsh.framgia.com.isoundcloud.data.model;
 
+import org.json.JSONObject;
+
+import lsh.framgia.com.isoundcloud.constant.TrackEntity;
+
 public class Track {
 
+    private String mId;
     private String mTitle;
     private String mArtist;
     private int mDuration;
@@ -11,6 +16,28 @@ public class Track {
     private boolean mIsDownloadable;
     private String mDownloadUrl;
     private String mDescription;
+    private boolean mIsFavorite;
+
+    public Track(JSONObject trackObject) {
+        JSONObject publisherObject = trackObject.optJSONObject(TrackEntity.PUBLISHER_METADATA);
+        mArtworkUrl = trackObject.optString(TrackEntity.ARTWORK_URL);
+        mDescription = trackObject.optString(TrackEntity.DESCRIPTION);
+        mIsDownloadable = trackObject.optBoolean(TrackEntity.IS_DOWNLOADABLE);
+        mDownloadUrl = trackObject.optString(TrackEntity.DOWNLOAD_URL);
+        mTitle = trackObject.optString(TrackEntity.TITLE);
+        mUri = trackObject.optString(TrackEntity.URI);
+        if (publisherObject != null) {
+            mArtist = publisherObject.optString(TrackEntity.ARTIST);
+        }
+    }
+
+    public String getId() {
+        return mId;
+    }
+
+    public void setId(String id) {
+        mId = id;
+    }
 
     public String getTitle() {
         return mTitle;
@@ -82,5 +109,13 @@ public class Track {
 
     public void setUri(String uri) {
         mUri = uri;
+    }
+
+    public boolean isIsFavorite() {
+        return mIsFavorite;
+    }
+
+    public void setIsFavorite(boolean isFavorite) {
+        mIsFavorite = isFavorite;
     }
 }
