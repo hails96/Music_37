@@ -41,6 +41,12 @@ public abstract class BaseActivity<P extends IPresenter> extends AppCompatActivi
         DialogUtils.dismissProgressDialog();
     }
 
+    @Override
+    public void back() {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) finish();
+        else getSupportFragmentManager().popBackStack();
+    }
+
     protected abstract int getLayoutId();
 
     protected abstract void initLayout();

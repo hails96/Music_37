@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +53,18 @@ public abstract class BaseFragment<P extends IPresenter> extends Fragment implem
     public void onStart() {
         super.onStart();
         mPresenter.start();
+    }
+
+    @Override
+    public void back() {
+        BaseActivity baseActivity = (BaseActivity) getActivity();
+        if (baseActivity == null) return;
+        FragmentManager fragmentManager = baseActivity.getSupportFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() == 0) {
+            baseActivity.finish();
+        } else {
+            fragmentManager.popBackStack();
+        }
     }
 
     protected void replaceFragment(int containerId, Fragment fragment,

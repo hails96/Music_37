@@ -31,10 +31,10 @@
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar_genre"
-                android:paddingEnd="@dimen/dp_36"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:elevation="@dimen/dp_4"
+                android:paddingEnd="@dimen/dp_36"
                 android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
@@ -44,8 +44,8 @@
                     android:id="@+id/text_toolbar_genre"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
                     android:layout_marginEnd="36dp"
+                    android:gravity="center_horizontal"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/sp_18"
                     android:textStyle="bold" />
@@ -56,16 +56,19 @@
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginEnd="@dimen/dp_5"
+        android:layout_marginStart="@dimen/dp_5"
         android:layout_marginTop="@dimen/dp_24"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_song"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floating_button_play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/dp_10"
