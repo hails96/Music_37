@@ -1,5 +1,6 @@
 package lsh.framgia.com.isoundcloud.base.mvp;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,11 @@ public abstract class BaseActivity<P extends IPresenter> extends AppCompatActivi
     public void setPresenter(P presenter) {
         mPresenter = presenter;
         mPresenter.start();
+    }
+
+    @Override
+    public Context getViewContext() {
+        return this;
     }
 
     protected abstract int getLayoutId();

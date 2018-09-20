@@ -7,7 +7,7 @@ import android.support.v7.widget.RecyclerView;
 
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseFragment;
-import lsh.framgia.com.isoundcloud.data.Genre;
+import lsh.framgia.com.isoundcloud.data.model.Genre;
 import lsh.framgia.com.isoundcloud.screen.main.genre.GenreFragment;
 import lsh.framgia.com.isoundcloud.screen.main.genre.GenrePresenter;
 

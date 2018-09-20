@@ -4,7 +4,7 @@ import java.util.List;
 
 import lsh.framgia.com.isoundcloud.base.mvp.IPresenter;
 import lsh.framgia.com.isoundcloud.base.mvp.IView;
-import lsh.framgia.com.isoundcloud.data.Genre;
+import lsh.framgia.com.isoundcloud.data.model.Genre;
 
 public interface HomeContract {
     interface View extends IView<Presenter> {

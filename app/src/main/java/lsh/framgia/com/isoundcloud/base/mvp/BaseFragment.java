@@ -1,5 +1,6 @@
 package lsh.framgia.com.isoundcloud.base.mvp;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +29,11 @@ public abstract class BaseFragment<P extends IPresenter> extends Fragment implem
     @Override
     public void setPresenter(P presenter) {
         mPresenter = presenter;
+    }
+
+    @Override
+    public Context getViewContext() {
+        return getContext();
     }
 
     @Override
