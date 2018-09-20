@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import lsh.framgia.com.isoundcloud.util.DialogUtils;
+
 public abstract class BaseFragment<P extends IPresenter> extends Fragment implements IView<P> {
 
     protected P mPresenter;
@@ -34,6 +36,16 @@ public abstract class BaseFragment<P extends IPresenter> extends Fragment implem
     @Override
     public Context getViewContext() {
         return getContext();
+    }
+
+    @Override
+    public void showProgress() {
+        DialogUtils.showProgressDialog(getActivity());
+    }
+
+    @Override
+    public void hideProgress() {
+        DialogUtils.dismissProgressDialog();
     }
 
     @Override
