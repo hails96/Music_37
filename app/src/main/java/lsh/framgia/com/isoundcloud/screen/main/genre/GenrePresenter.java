@@ -23,6 +23,7 @@ public class GenrePresenter extends BasePresenter<GenreContract.View>
 
     @Override
     public void start() {
+        mView.showProgress();
         mView.setupGenreView(mGenre);
         mTrackRepository = TrackRepository.getInstance(
                 TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance());
@@ -36,11 +37,13 @@ public class GenrePresenter extends BasePresenter<GenreContract.View>
 
     @Override
     public void onSuccess(@Nullable List<Track> result) {
-        mView.setupTracks(result);
+        mView.updateTracks(result);
+        mView.hideProgress();
     }
 
     @Override
     public void onError(Exception e) {
         mView.showError(e.getMessage());
+        mView.hideProgress();
     }
 }

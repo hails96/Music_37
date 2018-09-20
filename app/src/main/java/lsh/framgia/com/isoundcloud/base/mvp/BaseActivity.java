@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
+import lsh.framgia.com.isoundcloud.util.DialogUtils;
+
 public abstract class BaseActivity<P extends IPresenter> extends AppCompatActivity implements IView<P> {
 
     protected P mPresenter;
@@ -27,6 +29,16 @@ public abstract class BaseActivity<P extends IPresenter> extends AppCompatActivi
     @Override
     public Context getViewContext() {
         return this;
+    }
+
+    @Override
+    public void showProgress() {
+        DialogUtils.showProgressDialog(this);
+    }
+
+    @Override
+    public void hideProgress() {
+        DialogUtils.dismissProgressDialog();
     }
 
     protected abstract int getLayoutId();

@@ -5,6 +5,8 @@ import java.util.List;
 import lsh.framgia.com.isoundcloud.base.asynctask.BaseFetchingAsyncTask;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.data.source.TrackDataSource;
+import lsh.framgia.com.isoundcloud.data.source.local.TrackLocalDataSource;
+import lsh.framgia.com.isoundcloud.data.source.remote.TrackRemoteDataSource;
 
 public class TrackRepository implements TrackDataSource.LocalDataSource, TrackDataSource.RemoteDataSource {
 

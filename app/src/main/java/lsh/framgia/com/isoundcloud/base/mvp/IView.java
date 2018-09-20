@@ -7,4 +7,8 @@ public interface IView<P> {
     void setPresenter(P presenter);
 
     Context getViewContext();
+
+    void showProgress();
+
+    void hideProgress();
 }

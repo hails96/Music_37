@@ -12,7 +12,7 @@ public class GenreContract {
     interface View extends IView<Presenter> {
         void setupGenreView(Genre genre);
 
-        void setupTracks(List<Track> tracks);
+        void updateTracks(List<Track> tracks);
 
         void showError(String message);
     }
