@@ -24,6 +24,7 @@ public class Track {
         mDescription = trackObject.optString(TrackEntity.DESCRIPTION);
         mIsDownloadable = trackObject.optBoolean(TrackEntity.IS_DOWNLOADABLE);
         mDownloadUrl = trackObject.optString(TrackEntity.DOWNLOAD_URL);
+        mDuration = trackObject.optInt(TrackEntity.DURATION);
         mTitle = trackObject.optString(TrackEntity.TITLE);
         mUri = trackObject.optString(TrackEntity.URI);
         if (publisherObject != null) {
