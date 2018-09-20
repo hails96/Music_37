@@ -12,7 +12,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import lsh.framgia.com.isoundcloud.R;
-import lsh.framgia.com.isoundcloud.data.Genre;
+import lsh.framgia.com.isoundcloud.data.model.Genre;
 
 public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.GenreViewHolder> {
 

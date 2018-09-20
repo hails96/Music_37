@@ -15,7 +15,7 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.List;
 
 import lsh.framgia.com.isoundcloud.R;
-import lsh.framgia.com.isoundcloud.data.Track;
+import lsh.framgia.com.isoundcloud.data.model.Track;
 
 public class RecentlyDownloadedAdapter extends RecyclerView.Adapter
         <RecentlyDownloadedAdapter.ViewHolder> {
