@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,20 +14,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lsh.framgia.com.isoundcloud.R;
+import lsh.framgia.com.isoundcloud.base.EndlessScrollListener;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseFragment;
 import lsh.framgia.com.isoundcloud.data.model.Genre;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.screen.main.bottommenu.BottomMenuDialogFragment;
 import lsh.framgia.com.isoundcloud.screen.main.bottommenu.BottomMenuDialogPresenter;
 
-public class GenreFragment extends BaseFragment<GenreContract.Presenter>
-        implements GenreContract.View, TrackAdapter.OnTrackItemClickListener, View.OnClickListener {
+public class GenreFragment extends BaseFragment<GenreContract.Presenter> implements GenreContract.View,
+        TrackAdapter.OnTrackItemClickListener, View.OnClickListener {
 
     private Toolbar mToolbar;
     private ImageView mImageArtwork;
     private TextView mTextToolbarGenre;
     private FloatingActionButton mFloatingButtonPlay;
     private RecyclerView mRecyclerTrack;
+    private ProgressBar mProgressBarLoading;
 
     private TrackAdapter mTrackAdapter;
 
@@ -57,11 +60,13 @@ public class GenreFragment extends BaseFragment<GenreContract.Presenter>
     @Override
     public void updateTracks(List<Track> tracks) {
         mTrackAdapter.addAll(tracks);
+        mProgressBarLoading.setVisibility(View.GONE);
     }
 
     @Override
     public void showError(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        mProgressBarLoading.setVisibility(View.GONE);
     }
 
     @Override
@@ -102,10 +107,17 @@ public class GenreFragment extends BaseFragment<GenreContract.Presenter>
 
     private void setupRecyclerGenre() {
         mRecyclerTrack.setHasFixedSize(true);
-        mRecyclerTrack.setNestedScrollingEnabled(false);
         mRecyclerTrack.setLayoutManager(new LinearLayoutManager(getContext()));
-        mTrackAdapter = new TrackAdapter(getContext(), new ArrayList<Track>(), this);
+        mTrackAdapter = new TrackAdapter(getContext(), new ArrayList<Track>());
+        mTrackAdapter.setOnTrackItemClickListener(this);
         mRecyclerTrack.setAdapter(mTrackAdapter);
+        mRecyclerTrack.addOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public void onLoadMore() {
+                mProgressBarLoading.setVisibility(View.VISIBLE);
+                mPresenter.getTracks();
+            }
+        });
     }
 
     private void setupPreferences() {
@@ -113,6 +125,7 @@ public class GenreFragment extends BaseFragment<GenreContract.Presenter>
         mImageArtwork = mRootView.findViewById(R.id.image_artwork);
         mTextToolbarGenre = mRootView.findViewById(R.id.text_toolbar_genre);
         mFloatingButtonPlay = mRootView.findViewById(R.id.floating_button_play);
-        mRecyclerTrack = mRootView.findViewById(R.id.recycler_song);
+        mRecyclerTrack = mRootView.findViewById(R.id.recycler_track);
+        mProgressBarLoading = mRootView.findViewById(R.id.progress_bar_loading);
     }
 }

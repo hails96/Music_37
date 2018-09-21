@@ -16,29 +16,29 @@ import java.util.List;
 
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.data.model.Track;
+import lsh.framgia.com.isoundcloud.util.StringUtils;
 
-public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.ViewHolder> {
+public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHolder> {
 
     private Context mContext;
     private LayoutInflater mInflater;
     private List<Track> mTracks;
     private OnTrackItemClickListener mOnTrackItemClickListener;
 
-    public TrackAdapter(Context context, List<Track> tracks, OnTrackItemClickListener listener) {
+    public TrackAdapter(Context context, List<Track> tracks) {
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
         mTracks = tracks;
-        mOnTrackItemClickListener = listener;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(mInflater.inflate(R.layout.item_track, parent, false));
+    public TrackViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new TrackViewHolder(mInflater.inflate(R.layout.item_track, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull TrackViewHolder holder, int position) {
         holder.bindData(mContext, mTracks.get(position), mOnTrackItemClickListener);
     }
 
@@ -47,14 +47,18 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.ViewHolder> 
         return mTracks == null ? 0 : mTracks.size();
     }
 
-    public void addAll(List<Track> tracks) {
-        if (tracks != null || !tracks.isEmpty()) {
-            mTracks.addAll(tracks);
-            notifyDataSetChanged();
-        }
+    public TrackAdapter setOnTrackItemClickListener(OnTrackItemClickListener listener) {
+        mOnTrackItemClickListener = listener;
+        return this;
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    public void addAll(List<Track> tracks) {
+        if (tracks == null || tracks.isEmpty()) return;
+        mTracks.addAll(tracks);
+        notifyDataSetChanged();
+    }
+
+    static class TrackViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView mImageArtwork;
         private TextView mTextTitle;
@@ -62,7 +66,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.ViewHolder> 
         private TextView mTextDuration;
         private ImageView mImageMenu;
 
-        ViewHolder(View itemView) {
+        TrackViewHolder(View itemView) {
             super(itemView);
             mImageArtwork = itemView.findViewById(R.id.image_artwork);
             mTextTitle = itemView.findViewById(R.id.text_title);
@@ -84,7 +88,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.ViewHolder> 
                     .into(mImageArtwork);
             mTextTitle.setText(track.getTitle());
             mTextArtist.setText(track.getArtist());
-            mTextDuration.setText(String.valueOf(track.getDuration()));
+            mTextDuration.setText(StringUtils.convertMillisToDuration(track.getDuration()));
 
             mImageMenu.setOnClickListener(new View.OnClickListener() {
                 @Override

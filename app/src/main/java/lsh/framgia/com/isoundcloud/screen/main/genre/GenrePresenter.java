@@ -27,6 +27,11 @@ public class GenrePresenter extends BasePresenter<GenreContract.View>
         mView.setupGenreView(mGenre);
         mTrackRepository = TrackRepository.getInstance(
                 TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance());
+        getTracks();
+    }
+
+    @Override
+    public void getTracks() {
         mTrackRepository.getTracks(mGenre.getKey(), mOffset, LIMIT_PER_PAGE, this);
     }
 
@@ -37,8 +42,10 @@ public class GenrePresenter extends BasePresenter<GenreContract.View>
 
     @Override
     public void onSuccess(@Nullable List<Track> result) {
-        mView.updateTracks(result);
         mView.hideProgress();
+        mView.updateTracks(result);
+        if (result == null) return;
+        mOffset += result.size();
     }
 
     @Override

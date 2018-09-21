@@ -18,6 +18,6 @@ public class GenreContract {
     }
 
     interface Presenter extends IPresenter<View> {
-
+        void getTracks();
     }
 }
