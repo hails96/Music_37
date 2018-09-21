@@ -20,6 +20,7 @@ import lsh.framgia.com.isoundcloud.data.model.Genre;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.screen.main.bottommenu.BottomMenuDialogFragment;
 import lsh.framgia.com.isoundcloud.screen.main.bottommenu.BottomMenuDialogPresenter;
+import lsh.framgia.com.isoundcloud.screen.player.PlayerActivity;
 
 public class GenreFragment extends BaseFragment<GenreContract.Presenter> implements GenreContract.View,
         TrackAdapter.OnTrackItemClickListener, View.OnClickListener {
@@ -32,6 +33,7 @@ public class GenreFragment extends BaseFragment<GenreContract.Presenter> impleme
     private ProgressBar mProgressBarLoading;
 
     private TrackAdapter mTrackAdapter;
+    private Genre mGenre;
 
     public static GenreFragment newInstance() {
         return new GenreFragment();
@@ -52,6 +54,7 @@ public class GenreFragment extends BaseFragment<GenreContract.Presenter> impleme
     @Override
     public void setupGenreView(Genre genre) {
         if (genre == null) return;
+        mGenre = genre;
         mImageArtwork.setImageResource(genre.getArtworkResId());
         mTextToolbarGenre.setText(getString(genre.getNameResId()));
         mToolbar.setNavigationIcon(R.drawable.ic_back);
@@ -71,7 +74,9 @@ public class GenreFragment extends BaseFragment<GenreContract.Presenter> impleme
 
     @Override
     public void onTrackClick(Track track) {
-        // TODO: Open main player screen
+        if (getActivity() == null) return;
+        track.setGenreArtworkResId(mGenre.getArtworkResId());
+        getActivity().startActivity(PlayerActivity.getPlayerIntent(getContext(), track));
     }
 
     @Override

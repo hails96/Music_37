@@ -21,4 +21,8 @@ public class StringUtils {
                 TimeUnit.MILLISECONDS.toSeconds(millis) -
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
     }
+
+    public static String getOriginalUrl(String artworkUrl) {
+        return artworkUrl.replace(Constant.TEXT_LARGE, Constant.TEXT_ORIGINAL);
+    }
 }
