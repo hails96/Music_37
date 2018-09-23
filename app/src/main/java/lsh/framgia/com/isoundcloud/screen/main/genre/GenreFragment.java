@@ -18,6 +18,7 @@ import lsh.framgia.com.isoundcloud.base.EndlessScrollListener;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseFragment;
 import lsh.framgia.com.isoundcloud.data.model.Genre;
 import lsh.framgia.com.isoundcloud.data.model.Track;
+import lsh.framgia.com.isoundcloud.screen.main.MainActivity;
 import lsh.framgia.com.isoundcloud.screen.main.bottommenu.BottomMenuDialogFragment;
 import lsh.framgia.com.isoundcloud.screen.main.bottommenu.BottomMenuDialogPresenter;
 import lsh.framgia.com.isoundcloud.screen.player.PlayerActivity;
@@ -76,6 +77,7 @@ public class GenreFragment extends BaseFragment<GenreContract.Presenter> impleme
     public void onTrackClick(Track track) {
         if (getActivity() == null) return;
         track.setGenreArtworkResId(mGenre.getArtworkResId());
+        ((MainActivity) getActivity()).setPlaylist(mTrackAdapter.getTracks());
         getActivity().startActivity(PlayerActivity.getPlayerIntent(getContext(), track));
     }
 

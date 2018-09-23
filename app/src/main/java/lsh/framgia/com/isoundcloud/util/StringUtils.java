@@ -25,4 +25,9 @@ public class StringUtils {
     public static String getOriginalUrl(String artworkUrl) {
         return artworkUrl.replace(Constant.TEXT_LARGE, Constant.TEXT_ORIGINAL);
     }
+
+    public static String formatStreamUrl(String uri) {
+        return String.format(Locale.ENGLISH, Constant.FORMAT_STREAM_URL,
+                uri, BuildConfig.ApiKey);
+    }
 }

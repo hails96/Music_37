@@ -12,10 +12,11 @@ import com.bumptech.glide.request.RequestOptions;
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseActivity;
 import lsh.framgia.com.isoundcloud.data.model.Track;
+import lsh.framgia.com.isoundcloud.service.OnMediaPlayerStatusListener;
 import lsh.framgia.com.isoundcloud.util.StringUtils;
 
 public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
-        implements PlayerContract.View {
+        implements PlayerContract.View, OnMediaPlayerStatusListener {
 
     public static final String EXTRA_TRACK = "lsh.framgia.com.isoundcloud.EXTRA_TRACK";
 
@@ -56,6 +57,35 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         setupOptions();
         setupView(mTrack);
         hideProgress();
+    }
+
+    @Override
+    protected OnMediaPlayerStatusListener getMediaPlayerStatusListener() {
+        return this;
+    }
+
+    @Override
+    protected void onMusicServiceConnected() {
+        if (mMusicService.isPlaying()) {
+            // TODO: bind current track info
+        } else {
+            mMusicService.playTrack(mTrack);
+        }
+    }
+
+    @Override
+    public void onTrackPrepared(Track track) {
+
+    }
+
+    @Override
+    public void onTrackPaused() {
+
+    }
+
+    @Override
+    public void onTrackResumed() {
+
     }
 
     public static Intent getPlayerIntent(Context context, Track track) {

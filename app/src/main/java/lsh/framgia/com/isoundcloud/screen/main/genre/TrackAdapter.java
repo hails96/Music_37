@@ -58,6 +58,10 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         notifyDataSetChanged();
     }
 
+    public List<Track> getTracks() {
+        return mTracks;
+    }
+
     static class TrackViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView mImageArtwork;
