@@ -8,4 +8,8 @@ public interface OnMediaPlayerStatusListener {
     void onTrackPaused();
 
     void onTrackResumed();
+
+    void onNewTrackRequested(Track track);
+
+    void onTrackError();
 }

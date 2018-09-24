@@ -1,5 +1,7 @@
 package lsh.framgia.com.isoundcloud.screen.main.genre;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,7 +36,6 @@ public class GenreFragment extends BaseFragment<GenreContract.Presenter> impleme
     private ProgressBar mProgressBarLoading;
 
     private TrackAdapter mTrackAdapter;
-    private Genre mGenre;
 
     public static GenreFragment newInstance() {
         return new GenreFragment();
@@ -43,6 +44,13 @@ public class GenreFragment extends BaseFragment<GenreContract.Presenter> impleme
     @Override
     protected int getLayoutId() {
         return R.layout.fragment_genre;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        showProgress();
+        mPresenter.getTracks();
     }
 
     @Override
@@ -55,7 +63,6 @@ public class GenreFragment extends BaseFragment<GenreContract.Presenter> impleme
     @Override
     public void setupGenreView(Genre genre) {
         if (genre == null) return;
-        mGenre = genre;
         mImageArtwork.setImageResource(genre.getArtworkResId());
         mTextToolbarGenre.setText(getString(genre.getNameResId()));
         mToolbar.setNavigationIcon(R.drawable.ic_back);
@@ -76,7 +83,6 @@ public class GenreFragment extends BaseFragment<GenreContract.Presenter> impleme
     @Override
     public void onTrackClick(Track track) {
         if (getActivity() == null) return;
-        track.setGenreArtworkResId(mGenre.getArtworkResId());
         ((MainActivity) getActivity()).setPlaylist(mTrackAdapter.getTracks());
         getActivity().startActivity(PlayerActivity.getPlayerIntent(getContext(), track));
     }

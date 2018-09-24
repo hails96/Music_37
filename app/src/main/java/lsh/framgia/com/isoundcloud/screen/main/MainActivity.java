@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -101,6 +102,16 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
     @Override
     public void onTrackResumed() {
 
+    }
+
+    @Override
+    public void onNewTrackRequested(Track track) {
+
+    }
+
+    @Override
+    public void onTrackError() {
+        Toast.makeText(this, getString(R.string.error_player), Toast.LENGTH_SHORT).show();
     }
 
     public void setPlaylist(List<Track> tracks) {

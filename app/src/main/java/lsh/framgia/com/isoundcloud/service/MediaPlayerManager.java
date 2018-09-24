@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import java.io.IOException;
 import java.util.List;
 
+import lsh.framgia.com.isoundcloud.constant.TrackState;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.util.StringUtils;
 
@@ -21,7 +22,7 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
     private MediaPlayer mMediaPlayer;
     private List<Track> mPlaylist;
     private int mCurrentTrackPosition;
-    private boolean mIsPlaying;
+    private int mTrackState;
 
     static synchronized MediaPlayerManager getInstance(MusicService musicService) {
         if (sInstance == null) {
@@ -37,20 +38,22 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
     @Override
     public void onPrepared(MediaPlayer mp) {
         mMediaPlayer.start();
+        setTrackState(TrackState.PREPARED);
         mMusicService.onTrackPrepared(getCurrentTrack());
     }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         mMediaPlayer.reset();
-        mIsPlaying = false;
+        setTrackState(TrackState.INVALID);
+        mMusicService.onTrackError();
         return true;
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
         mMediaPlayer.reset();
-        mIsPlaying = false;
+        setTrackState(TrackState.INVALID);
         playNextTrack();
     }
 
@@ -64,10 +67,11 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
         }
 
         try {
+            setTrackState(TrackState.PREPARING);
             mMediaPlayer.setDataSource(StringUtils.formatStreamUrl(track.getUri()));
             mMediaPlayer.prepareAsync();
             mCurrentTrackPosition = mPlaylist.indexOf(track);
-            mIsPlaying = true;
+            mMusicService.onNewTrackRequested(getCurrentTrack());
             mMusicService.showNotification(getCurrentTrack());
         } catch (IOException e) {
             e.printStackTrace();
@@ -95,14 +99,15 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
                 playPreviousTrack();
                 break;
             case ACTION_STATE_CHANGE:
-                if (mIsPlaying) stopPlayingMusic();
+                if (mTrackState == TrackState.INVALID || mTrackState == TrackState.PREPARING) return;
+                if (isPlaying()) stopPlayingMusic();
                 else resumePlayingMusic();
                 break;
         }
     }
 
     public void stopPlayingMusic() {
-        mIsPlaying = false;
+        setTrackState(TrackState.PAUSED);
         mMediaPlayer.pause();
         mMusicService.showNotification(getCurrentTrack());
         mMusicService.stopForeground(false);
@@ -110,7 +115,7 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
     }
 
     public void resumePlayingMusic() {
-        mIsPlaying = true;
+        setTrackState(TrackState.PREPARED);
         mMediaPlayer.start();
         mMusicService.showNotification(getCurrentTrack());
         mMusicService.onTrackResumed();
@@ -137,7 +142,7 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
     }
 
     public boolean isPlaying() {
-        return mMediaPlayer != null && mIsPlaying;
+        return mMediaPlayer != null && mMediaPlayer.isPlaying();
     }
 
     public int getDuration() {
@@ -148,11 +153,19 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
         return mMediaPlayer.getCurrentPosition();
     }
 
+    public int getTrackState() {
+        return mTrackState;
+    }
+
     private void initMediaPlayer() {
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mMediaPlayer.setOnPreparedListener(this);
         mMediaPlayer.setOnErrorListener(this);
         mMediaPlayer.setOnCompletionListener(this);
+    }
+
+    private void setTrackState(@TrackState int trackState) {
+        mTrackState = trackState;
     }
 }

@@ -57,6 +57,8 @@
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:gravity="center"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
         android:singleLine="true"
         android:textColor="@android:color/black"
         android:textSize="@dimen/sp_18"
@@ -76,6 +78,8 @@
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:gravity="center"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
         android:singleLine="true"
         app:layout_constraintBottom_toTopOf="@id/seek_bar_duration"
         app:layout_constraintEnd_toEndOf="parent"
@@ -134,13 +138,23 @@
 
     <ImageView
         android:id="@+id/image_play"
-        android:layout_width="@dimen/dp_40"
-        android:layout_height="@dimen/dp_40"
-        android:src="@drawable/ic_play"
+        android:layout_width="@dimen/dp_48"
+        android:layout_height="@dimen/dp_48"
+        android:src="@drawable/ic_pause"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/image_transparent"
         app:layout_constraintEnd_toStartOf="@id/image_next"
         app:layout_constraintStart_toEndOf="@id/image_previous"
         app:layout_constraintTop_toTopOf="@id/seek_bar_duration" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar_loading"
+        android:layout_width="@dimen/dp_48"
+        android:layout_height="@dimen/dp_48"
+        app:layout_constraintBottom_toBottomOf="@id/image_play"
+        app:layout_constraintEnd_toEndOf="@id/image_play"
+        app:layout_constraintStart_toStartOf="@id/image_play"
+        app:layout_constraintTop_toTopOf="@id/image_play" />
 
     <ImageView
         android:id="@+id/image_next"
