@@ -9,16 +9,20 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.List;
+
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseActivity;
+import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.screen.main.genre.GenreFragment;
 import lsh.framgia.com.isoundcloud.screen.main.home.HomeFragment;
 import lsh.framgia.com.isoundcloud.screen.main.home.HomePresenter;
 import lsh.framgia.com.isoundcloud.screen.main.search.SearchFragment;
 import lsh.framgia.com.isoundcloud.screen.main.search.SearchPresenter;
+import lsh.framgia.com.isoundcloud.service.OnMediaPlayerStatusListener;
 
 public class MainActivity extends BaseActivity<MainContract.Presenter> implements MainContract.View,
-        FragmentManager.OnBackStackChangedListener {
+        FragmentManager.OnBackStackChangedListener, OnMediaPlayerStatusListener {
 
     private Toolbar mToolbar;
     private BottomNavigationView mBottomNavigation;
@@ -38,6 +42,11 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
         HomePresenter homePresenter = new HomePresenter();
         homePresenter.setView(homeFragment);
         replaceFragment(R.id.frame_container, homeFragment, false, null);
+    }
+
+    @Override
+    protected OnMediaPlayerStatusListener getMediaPlayerStatusListener() {
+        return this;
     }
 
     @Override
@@ -70,6 +79,32 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
             mBottomNavigation.setVisibility(View.VISIBLE);
             if (getSupportActionBar() != null) getSupportActionBar().show();
         }
+    }
+
+    @Override
+    protected void onMusicServiceConnected() {
+        if (mMusicService.isPlaying()) {
+            // TODO: Bind track info to mini player
+        }
+    }
+
+    @Override
+    public void onTrackPrepared(Track track) {
+
+    }
+
+    @Override
+    public void onTrackPaused() {
+
+    }
+
+    @Override
+    public void onTrackResumed() {
+
+    }
+
+    public void setPlaylist(List<Track> tracks) {
+        mMusicService.setPlaylist(tracks);
     }
 
     private void goToSearchScreen() {

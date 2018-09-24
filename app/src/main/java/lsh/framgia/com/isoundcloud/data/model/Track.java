@@ -24,6 +24,7 @@ public class Track implements Parcelable {
 
     public Track(JSONObject trackObject) {
         JSONObject publisherObject = trackObject.optJSONObject(TrackEntity.PUBLISHER_METADATA);
+        mId = trackObject.optString(TrackEntity.ID);
         mArtworkUrl = trackObject.optString(TrackEntity.ARTWORK_URL);
         mDescription = trackObject.optString(TrackEntity.DESCRIPTION);
         mIsDownloadable = trackObject.optBoolean(TrackEntity.IS_DOWNLOADABLE);
@@ -70,6 +71,12 @@ public class Track implements Parcelable {
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Track)) return false;
+        return mId.equalsIgnoreCase(((Track) obj).getId());
     }
 
     public static final Creator<Track> CREATOR = new Creator<Track>() {
