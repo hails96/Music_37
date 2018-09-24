@@ -54,7 +54,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     private Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
-            if (mIsBound && mMusicService.isPlaying()) {
+            if (mIsBound) {
                 int position = mMusicService.getCurrentPosition();
                 mSeekBarDuration.setProgress(position);
                 mTextCurrentDuration.setText(StringUtils.convertMillisToDuration(position));
@@ -90,7 +90,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         } else {
             setupView(mMusicService.getCurrentTrack());
             updatePlayPauseView(mMusicService.getTrackState());
-            mHandler.postDelayed(mRunnable, DELAY_TIME);
+            mHandler.post(mRunnable);
         }
     }
 
@@ -151,6 +151,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         mMusicService.seekTo(seekBar.getProgress());
+        mTextCurrentDuration.setText(StringUtils.convertMillisToDuration(seekBar.getProgress()));
     }
 
     public static Intent getPlayerIntent(Context context, Track track) {
@@ -200,13 +201,15 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     }
 
     private void updatePlayPauseView(@TrackState int state) {
-        if (state != TrackState.PREPARED) {
+        if (state != TrackState.PREPARED && state != TrackState.PAUSED) {
             mProgressBarLoading.setVisibility(View.VISIBLE);
             mImagePlayPause.setVisibility(View.INVISIBLE);
         } else {
             mProgressBarLoading.setVisibility(View.GONE);
             mImagePlayPause.setVisibility(View.VISIBLE);
         }
+        if (state == TrackState.PAUSED) onTrackPaused();
+        else onTrackResumed();
     }
 
     private void resetSeekBar(Track track) {
@@ -245,7 +248,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     }
 
     private void loadImageWithGlide(RequestOptions options, ImageView imageView, String url) {
-        Glide.with(this)
+        Glide.with(getApplicationContext())
                 .load(url)
                 .apply(options)
                 .into(imageView);
