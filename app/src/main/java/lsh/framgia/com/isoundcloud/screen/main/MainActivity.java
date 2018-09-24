@@ -1,5 +1,7 @@
 package lsh.framgia.com.isoundcloud.screen.main;
 
+import android.content.Intent;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,25 +10,41 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseActivity;
+import lsh.framgia.com.isoundcloud.constant.TrackState;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.screen.main.genre.GenreFragment;
 import lsh.framgia.com.isoundcloud.screen.main.home.HomeFragment;
 import lsh.framgia.com.isoundcloud.screen.main.home.HomePresenter;
 import lsh.framgia.com.isoundcloud.screen.main.search.SearchFragment;
 import lsh.framgia.com.isoundcloud.screen.main.search.SearchPresenter;
+import lsh.framgia.com.isoundcloud.screen.player.PlayerActivity;
 import lsh.framgia.com.isoundcloud.service.OnMediaPlayerStatusListener;
 
 public class MainActivity extends BaseActivity<MainContract.Presenter> implements MainContract.View,
-        FragmentManager.OnBackStackChangedListener, OnMediaPlayerStatusListener {
+        FragmentManager.OnBackStackChangedListener, OnMediaPlayerStatusListener, View.OnClickListener {
 
     private Toolbar mToolbar;
     private BottomNavigationView mBottomNavigation;
+    private ConstraintLayout mMiniPlayer;
+    private TextView mTrackTitle;
+    private TextView mTrackArtist;
+    private ImageView mImageArtwork;
+    private ImageView mImagePrevious;
+    private ImageView mImagePlayPause;
+    private ImageView mImageNext;
+    private ProgressBar mProgressBarLoading;
 
     @Override
     protected int getLayoutId() {
@@ -84,29 +102,36 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
 
     @Override
     protected void onMusicServiceConnected() {
-        if (mMusicService.isPlaying()) {
-            // TODO: Bind track info to mini player
-        }
+        setupMiniPlayer(mMusicService.getCurrentTrack());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mMusicService == null) return;
+        mMusicService.setOnMediaPlayerStatusListener(this);
+        setupMiniPlayer(mMusicService.getCurrentTrack());
     }
 
     @Override
     public void onTrackPrepared(Track track) {
-
+        setupMiniPlayer(track);
     }
 
     @Override
     public void onTrackPaused() {
-
+        mImagePlayPause.setImageResource(R.drawable.ic_play_white);
     }
 
     @Override
     public void onTrackResumed() {
-
+        mImagePlayPause.setImageResource(R.drawable.ic_pause_white);
     }
 
     @Override
     public void onNewTrackRequested(Track track) {
-
+        mImagePlayPause.setImageResource(R.drawable.ic_pause_white);
+        setupMiniPlayer(track);
     }
 
     @Override
@@ -114,8 +139,74 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
         Toast.makeText(this, getString(R.string.error_player), Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.layout_mini_player:
+                startActivity(new Intent(this, PlayerActivity.class));
+                break;
+            case R.id.image_mini_player_action:
+                handlePlayerActionChanged();
+                break;
+            case R.id.image_mini_player_previous:
+                mMusicService.playPreviousTrack();
+                break;
+            case R.id.image_mini_player_next:
+                mMusicService.playNextTrack();
+                break;
+        }
+    }
+
     public void setPlaylist(List<Track> tracks) {
         mMusicService.setPlaylist(tracks);
+    }
+
+    private void handlePlayerActionChanged() {
+        if (mMusicService.isPlaying()) {
+            mMusicService.stopPlayingMusic();
+        } else {
+            mMusicService.resumePlayingMusic();
+        }
+    }
+
+    private void setupMiniPlayer(Track track) {
+        if (track == null) return;
+        mMiniPlayer.setVisibility(View.VISIBLE);
+        mTrackTitle.setSelected(true);
+        mTrackArtist.setSelected(true);
+        displayArtworkImage(track);
+        displayTrackInfo(track);
+        updatePlayPauseView(mMusicService.getTrackState());
+    }
+
+    private void displayTrackInfo(Track track) {
+        mTrackTitle.setText(track.getTitle());
+        mTrackArtist.setText(track.getArtist());
+    }
+
+    private void updatePlayPauseView(int state) {
+        if (state != TrackState.PREPARED && state != TrackState.PAUSED) {
+            mProgressBarLoading.setVisibility(View.VISIBLE);
+            mImagePlayPause.setVisibility(View.INVISIBLE);
+        } else {
+            mProgressBarLoading.setVisibility(View.GONE);
+            mImagePlayPause.setVisibility(View.VISIBLE);
+        }
+
+        if (state == TrackState.PAUSED) onTrackPaused();
+        else onTrackResumed();
+    }
+
+    private void displayArtworkImage(Track track) {
+        RequestOptions options = new RequestOptions()
+                .centerCrop()
+                .circleCrop()
+                .placeholder(R.drawable.bg_track_place_holder)
+                .placeholder(R.drawable.bg_track_place_holder);
+        Glide.with(getApplicationContext())
+                .load(track.getArtworkUrl())
+                .apply(options)
+                .into(mImageArtwork);
     }
 
     private void goToSearchScreen() {
@@ -127,11 +218,23 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
 
     private void setupListeners() {
         getSupportFragmentManager().addOnBackStackChangedListener(this);
+        mMiniPlayer.setOnClickListener(this);
+        mImagePrevious.setOnClickListener(this);
+        mImagePlayPause.setOnClickListener(this);
+        mImageNext.setOnClickListener(this);
     }
 
     private void setupReferences() {
         mToolbar = findViewById(R.id.toolbar_genre);
         mBottomNavigation = findViewById(R.id.bottom_navigation);
+        mMiniPlayer = findViewById(R.id.layout_mini_player);
+        mTrackTitle = mMiniPlayer.findViewById(R.id.text_mini_player_title);
+        mTrackArtist = mMiniPlayer.findViewById(R.id.text_mini_player_artist);
+        mImageArtwork = mMiniPlayer.findViewById(R.id.image_mini_player_artwork);
+        mImagePrevious = mMiniPlayer.findViewById(R.id.image_mini_player_previous);
+        mImagePlayPause = mMiniPlayer.findViewById(R.id.image_mini_player_action);
+        mImageNext = mMiniPlayer.findViewById(R.id.image_mini_player_next);
+        mProgressBarLoading = mMiniPlayer.findViewById(R.id.progress_bar_loading);
     }
 
     private void setupToolbar() {

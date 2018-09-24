@@ -63,8 +63,8 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
         if (mMediaPlayer.isPlaying()
                 || (!mMediaPlayer.isPlaying() && mMediaPlayer.getCurrentPosition() > 0)) {
             mMediaPlayer.stop();
-            mMediaPlayer.reset();
         }
+        mMediaPlayer.reset();
 
         try {
             setTrackState(TrackState.PREPARING);
@@ -126,7 +126,7 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
     }
 
     public Track getCurrentTrack() {
-        return mPlaylist.get(mCurrentTrackPosition);
+        return mPlaylist != null ? mPlaylist.get(mCurrentTrackPosition) : null;
     }
 
     public void setPlaylist(List<Track> tracks) {

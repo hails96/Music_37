@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -151,10 +152,13 @@
         android:id="@+id/progress_bar_loading"
         android:layout_width="@dimen/dp_48"
         android:layout_height="@dimen/dp_48"
+        android:indeterminateTint="@color/color_primary"
+        android:indeterminateTintMode="src_in"
         app:layout_constraintBottom_toBottomOf="@id/image_play"
         app:layout_constraintEnd_toEndOf="@id/image_play"
         app:layout_constraintStart_toStartOf="@id/image_play"
-        app:layout_constraintTop_toTopOf="@id/image_play" />
+        app:layout_constraintTop_toTopOf="@id/image_play"
+        tools:ignore="UnusedAttribute" />
 
     <ImageView
         android:id="@+id/image_next"
