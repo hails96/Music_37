@@ -13,6 +13,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import java.util.List;
 
 import lsh.framgia.com.isoundcloud.R;
+import lsh.framgia.com.isoundcloud.constant.TrackState;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.screen.player.PlayerActivity;
 
@@ -89,8 +90,8 @@ public class MusicService extends Service {
                         .setShowActionsInCompactView(1))
                 .addAction(R.drawable.ic_skip_previous, getString(R.string.action_previous),
                         createNewPendingIntent(ACTION_PREVIOUS));
-        if (mManager.isPlaying()) {
-            mBuilder.addAction(R.drawable.ic_pause, getString(R.string.action_state_change),
+        if (mManager.getTrackState() != TrackState.PAUSED) {
+            mBuilder.addAction(R.drawable.ic_pause_white, getString(R.string.action_state_change),
                     createNewPendingIntent(ACTION_STATE_CHANGE));
         } else {
             mBuilder.addAction(R.drawable.ic_play_white, getString(R.string.action_state_change),
@@ -101,6 +102,14 @@ public class MusicService extends Service {
         Notification notification = mBuilder.build();
         mNotificationManager.notify(NOTIFICATION_ID, notification);
         startForeground(NOTIFICATION_ID, notification);
+    }
+
+    public void playPreviousTrack() {
+        mManager.playPreviousTrack();
+    }
+
+    public void playNextTrack() {
+        mManager.playNextTrack();
     }
 
     public void stopPlayingMusic() {
@@ -135,6 +144,10 @@ public class MusicService extends Service {
         return mManager.getPlaylist();
     }
 
+    public Track getCurrentTrack() {
+        return mManager.getCurrentTrack();
+    }
+
     public void seekTo(int progress) {
         mManager.seekTo(progress);
     }
@@ -143,6 +156,20 @@ public class MusicService extends Service {
         Intent intent = new Intent(this, MusicService.class);
         intent.setAction(action);
         return PendingIntent.getService(this, DEFAULT_REQUEST_CODE, intent, DEFAULT_FLAG);
+    }
+
+    public void onNewTrackRequested(Track track) {
+        if (mOnMediaPlayerStatusListener == null) return;
+        mOnMediaPlayerStatusListener.onNewTrackRequested(track);
+    }
+
+    public void onTrackError() {
+        if (mOnMediaPlayerStatusListener == null) return;
+        mOnMediaPlayerStatusListener.onTrackError();
+    }
+
+    public int getTrackState() {
+        return mManager != null ? mManager.getTrackState() : TrackState.INVALID;
     }
 
     public class MusicBinder extends Binder {

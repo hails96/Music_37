@@ -23,15 +23,15 @@ public class GenrePresenter extends BasePresenter<GenreContract.View>
 
     @Override
     public void start() {
-        mView.showProgress();
         mView.setupGenreView(mGenre);
-        mTrackRepository = TrackRepository.getInstance(
-                TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance());
-        getTracks();
     }
 
     @Override
     public void getTracks() {
+        if (mTrackRepository == null) {
+            mTrackRepository = TrackRepository.getInstance(
+                    TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance());
+        }
         mTrackRepository.getTracks(mGenre.getKey(), mOffset, LIMIT_PER_PAGE, this);
     }
 

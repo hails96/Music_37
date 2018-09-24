@@ -22,4 +22,5 @@
     <string name="action_previous">Previous</string>
     <string name="action_state_change">Play/Pause</string>
     <string name="action_next">Next</string>
+    <string name="error_player">There has been an error with the player, please try another track.</string>
 </resources>

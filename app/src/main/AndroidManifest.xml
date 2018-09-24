@@ -23,7 +23,9 @@
 
         <activity android:name=".screen.main.MainActivity" />
 
-        <activity android:name=".screen.player.PlayerActivity" />
+        <activity
+            android:name=".screen.player.PlayerActivity"
+            android:launchMode="singleTop" />
 
         <service android:name=".service.MusicService" />
     </application>
