@@ -4,7 +4,7 @@
         android:icon="@drawable/ic_home" />
     <item android:id="@+id/action_settings"
         android:title="@string/label_downloaded"
-        android:icon="@drawable/ic_cloud_download" />
+        android:icon="@drawable/ic_downloadable" />
     <item android:id="@+id/action_navigation"
         android:title="@string/label_library"
         android:icon="@drawable/ic_library" />

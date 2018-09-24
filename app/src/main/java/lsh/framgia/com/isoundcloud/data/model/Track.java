@@ -1,10 +1,13 @@
 package lsh.framgia.com.isoundcloud.data.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONObject;
 
 import lsh.framgia.com.isoundcloud.constant.TrackEntity;
 
-public class Track {
+public class Track implements Parcelable {
 
     private String mId;
     private String mTitle;
@@ -16,6 +19,7 @@ public class Track {
     private boolean mIsDownloadable;
     private String mDownloadUrl;
     private String mDescription;
+    private int mGenreArtworkResId;
     private boolean mIsFavorite;
 
     public Track(JSONObject trackObject) {
@@ -31,6 +35,54 @@ public class Track {
             mArtist = publisherObject.optString(TrackEntity.ARTIST);
         }
     }
+
+    protected Track(Parcel in) {
+        mId = in.readString();
+        mTitle = in.readString();
+        mArtist = in.readString();
+        mDuration = in.readInt();
+        mUri = in.readString();
+        mStreamUrl = in.readString();
+        mArtworkUrl = in.readString();
+        mIsDownloadable = in.readByte() != 0;
+        mDownloadUrl = in.readString();
+        mDescription = in.readString();
+        mGenreArtworkResId = in.readInt();
+        mIsFavorite = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mId);
+        dest.writeString(mTitle);
+        dest.writeString(mArtist);
+        dest.writeInt(mDuration);
+        dest.writeString(mUri);
+        dest.writeString(mStreamUrl);
+        dest.writeString(mArtworkUrl);
+        dest.writeByte((byte) (mIsDownloadable ? 1 : 0));
+        dest.writeString(mDownloadUrl);
+        dest.writeString(mDescription);
+        dest.writeInt(mGenreArtworkResId);
+        dest.writeByte((byte) (mIsFavorite ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Track> CREATOR = new Creator<Track>() {
+        @Override
+        public Track createFromParcel(Parcel in) {
+            return new Track(in);
+        }
+
+        @Override
+        public Track[] newArray(int size) {
+            return new Track[size];
+        }
+    };
 
     public String getId() {
         return mId;
@@ -84,7 +136,7 @@ public class Track {
         return mIsDownloadable;
     }
 
-    public void setDownloadable(boolean downloadable) {
+    public void setIsDownloadable(boolean downloadable) {
         this.mIsDownloadable = downloadable;
     }
 
@@ -94,6 +146,14 @@ public class Track {
 
     public void setDownloadUrl(String downloadUrl) {
         mDownloadUrl = downloadUrl;
+    }
+
+    public int getGenreArtworkResId() {
+        return mGenreArtworkResId;
+    }
+
+    public void setGenreArtworkResId(int genreResId) {
+        mGenreArtworkResId = genreResId;
     }
 
     public String getDescription() {
@@ -112,7 +172,7 @@ public class Track {
         mUri = uri;
     }
 
-    public boolean isIsFavorite() {
+    public boolean isFavorite() {
         return mIsFavorite;
     }
 

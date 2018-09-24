@@ -20,4 +20,6 @@
     <dimen name="dp_16">16dp</dimen>
     <dimen name="dp_300">300dp</dimen>
     <dimen name="dp_36">36dp</dimen>
+    <dimen name="dp_50">50dp</dimen>
+    <dimen name="dp_1">1dp</dimen>
 </resources>
