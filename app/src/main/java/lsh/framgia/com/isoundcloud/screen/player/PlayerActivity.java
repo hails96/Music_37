@@ -15,6 +15,8 @@ import com.bumptech.glide.request.RequestOptions;
 
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseActivity;
+import lsh.framgia.com.isoundcloud.constant.LoopMode;
+import lsh.framgia.com.isoundcloud.constant.ShuffleMode;
 import lsh.framgia.com.isoundcloud.constant.TrackState;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.service.OnMediaPlayerStatusListener;
@@ -122,6 +124,37 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     }
 
     @Override
+    public void onLoopModeChanged(int loopMode) {
+        switch (loopMode) {
+            case LoopMode.OFF:
+                mImageLoop.setImageResource(R.drawable.ic_loop_off);
+                break;
+            case LoopMode.ONE:
+                mImageLoop.setImageResource(R.drawable.ic_loop_one);
+                break;
+            case LoopMode.ALL:
+                mImageLoop.setImageResource(R.drawable.ic_loop_all);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onShuffleModeChanged(int shuffleMode) {
+        switch (shuffleMode) {
+            case ShuffleMode.OFF:
+                mImageShuffle.setImageResource(R.drawable.ic_shuffle_off);
+                break;
+            case ShuffleMode.ON:
+                mImageShuffle.setImageResource(R.drawable.ic_shuffle_on);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.image_play:
@@ -132,6 +165,15 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
                 break;
             case R.id.image_next:
                 mMusicService.playNextTrack();
+                break;
+            case R.id.image_loop:
+                mMusicService.changeLoopMode();
+                break;
+            case R.id.image_shuffle:
+                mMusicService.changeShuffleMode();
+                break;
+            case R.id.image_arrow_down:
+                finish();
                 break;
             default:
                 break;
@@ -172,7 +214,10 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         mImagePlayPause.setOnClickListener(this);
         mImagePrevious.setOnClickListener(this);
         mImageNext.setOnClickListener(this);
+        mImageLoop.setOnClickListener(this);
+        mImageShuffle.setOnClickListener(this);
         mSeekBarDuration.setOnSeekBarChangeListener(this);
+        mImageArrowDown.setOnClickListener(this);
     }
 
     private void setupOptions() {
@@ -192,6 +237,8 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         if (track == null) return;
         if (mMusicService != null) {
             updatePlayPauseView(mMusicService.getTrackState());
+            onLoopModeChanged(mMusicService.getLoopMode());
+            onShuffleModeChanged(mMusicService.getShuffleMode());
         }
         displayArtwork(track);
         displayTrackInfo(track);
