@@ -6,10 +6,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import lsh.framgia.com.isoundcloud.util.DialogUtils;
 
@@ -66,6 +68,31 @@ public abstract class BaseFragment<P extends IPresenter> extends Fragment implem
         } else {
             fragmentManager.popBackStack();
         }
+    }
+
+    protected void showKeyBoard(EditText editText) {
+        if (getActivity() == null) return;
+        editText.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getActivity()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        }
+    }
+
+    protected void hideKeyBoard(View view) {
+        if (getActivity() != null && view != null) {
+            InputMethodManager imm = (InputMethodManager) getActivity()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        }
+    }
+
+    protected BaseActivity getBaseActivity() {
+        return (BaseActivity) getActivity();
     }
 
     protected void replaceFragment(int containerId, Fragment fragment,

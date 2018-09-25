@@ -32,7 +32,7 @@ public class GenrePresenter extends BasePresenter<GenreContract.View>
             mTrackRepository = TrackRepository.getInstance(
                     TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance());
         }
-        mTrackRepository.getTracks(mGenre.getKey(), mOffset, LIMIT_PER_PAGE, this);
+        mTrackRepository.getRemoteTracks(mGenre.getKey(), mOffset, LIMIT_PER_PAGE, this);
     }
 
     public GenrePresenter setGenre(Genre genre) {

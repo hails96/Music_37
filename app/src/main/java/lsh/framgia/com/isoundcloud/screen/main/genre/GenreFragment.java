@@ -51,13 +51,22 @@ public class GenreFragment extends BaseFragment<GenreContract.Presenter> impleme
         super.onCreate(savedInstanceState);
         showProgress();
         mPresenter.getTracks();
+        if (getActivity() == null) return;
+        ((MainActivity) getActivity()).showActionAndBottomBar(false);
     }
 
     @Override
     protected void initLayout() {
         setupPreferences();
         setupListeners();
-        setupRecyclerGenre();
+        setupRecyclerTrack();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (getActivity() == null) return;
+        ((MainActivity) getActivity()).showActionAndBottomBar(true);
     }
 
     @Override
@@ -118,7 +127,7 @@ public class GenreFragment extends BaseFragment<GenreContract.Presenter> impleme
         });
     }
 
-    private void setupRecyclerGenre() {
+    private void setupRecyclerTrack() {
         mRecyclerTrack.setHasFixedSize(true);
         mRecyclerTrack.setLayoutManager(new LinearLayoutManager(getContext()));
         mTrackAdapter = new TrackAdapter(getContext(), new ArrayList<Track>());
