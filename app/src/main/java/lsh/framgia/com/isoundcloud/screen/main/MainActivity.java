@@ -1,13 +1,10 @@
 package lsh.framgia.com.isoundcloud.screen.main;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -24,7 +21,9 @@ import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseActivity;
 import lsh.framgia.com.isoundcloud.constant.TrackState;
 import lsh.framgia.com.isoundcloud.data.model.Track;
-import lsh.framgia.com.isoundcloud.screen.main.genre.GenreFragment;
+import lsh.framgia.com.isoundcloud.data.repository.TrackRepository;
+import lsh.framgia.com.isoundcloud.data.source.local.TrackLocalDataSource;
+import lsh.framgia.com.isoundcloud.data.source.remote.TrackRemoteDataSource;
 import lsh.framgia.com.isoundcloud.screen.main.home.HomeFragment;
 import lsh.framgia.com.isoundcloud.screen.main.home.HomePresenter;
 import lsh.framgia.com.isoundcloud.screen.main.search.SearchFragment;
@@ -33,7 +32,8 @@ import lsh.framgia.com.isoundcloud.screen.player.PlayerActivity;
 import lsh.framgia.com.isoundcloud.service.OnMediaPlayerStatusListener;
 
 public class MainActivity extends BaseActivity<MainContract.Presenter> implements MainContract.View,
-        FragmentManager.OnBackStackChangedListener, OnMediaPlayerStatusListener, View.OnClickListener {
+        OnMediaPlayerStatusListener, View.OnClickListener,
+        BottomNavigationView.OnNavigationItemSelectedListener {
 
     private Toolbar mToolbar;
     private BottomNavigationView mBottomNavigation;
@@ -57,47 +57,12 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
         setupReferences();
         setupToolbar();
         setupListeners();
-        HomeFragment homeFragment = HomeFragment.newInstance();
-        HomePresenter homePresenter = new HomePresenter();
-        homePresenter.setView(homeFragment);
-        replaceFragment(R.id.frame_container, homeFragment, false, null);
+        replaceHomeFragment();
     }
 
     @Override
     protected OnMediaPlayerStatusListener getMediaPlayerStatusListener() {
         return this;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.toolbar_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                goToSearchScreen();
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-        return true;
-    }
-
-    @Override
-    public void onBackStackChanged() {
-        Fragment fragment = getSupportFragmentManager()
-                .findFragmentByTag(GenreFragment.class.getSimpleName());
-        if (fragment instanceof GenreFragment && fragment.isVisible()) {
-            mBottomNavigation.setVisibility(View.GONE);
-            if (getSupportActionBar() != null) getSupportActionBar().hide();
-        } else {
-            mBottomNavigation.setVisibility(View.VISIBLE);
-            if (getSupportActionBar() != null) getSupportActionBar().show();
-        }
     }
 
     @Override
@@ -167,8 +132,57 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
         }
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_home:
+                replaceHomeFragment();
+                return true;
+            case R.id.action_search:
+                replaceSearchFragment();
+                return true;
+            case R.id.action_library:
+                replaceLibraryFragment();
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public void setPlaylist(List<Track> tracks) {
         mMusicService.setPlaylist(tracks);
+    }
+
+    public void showActionAndBottomBar(boolean isShown) {
+        if (isShown) {
+            mBottomNavigation.setVisibility(View.VISIBLE);
+            if (getSupportActionBar() != null) getSupportActionBar().show();
+        } else {
+            mBottomNavigation.setVisibility(View.GONE);
+            if (getSupportActionBar() != null) getSupportActionBar().hide();
+        }
+    }
+
+    private void replaceHomeFragment() {
+        HomeFragment homeFragment = HomeFragment.newInstance();
+        HomePresenter homePresenter = new HomePresenter();
+        homePresenter.setView(homeFragment);
+        replaceFragment(R.id.frame_container, homeFragment, false, null);
+        getSupportActionBar().show();
+    }
+
+    private void replaceSearchFragment() {
+        getSupportActionBar().hide();
+        SearchFragment searchFragment = SearchFragment.newInstance();
+        SearchPresenter searchPresenter = new SearchPresenter(TrackRepository.getInstance(
+                TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance()
+        ));
+        searchPresenter.setView(searchFragment);
+        replaceFragment(R.id.frame_container, searchFragment, false, null);
+    }
+
+    private void replaceLibraryFragment() {
+        // TODO: open library screen
     }
 
     private void handlePlayerActionChanged() {
@@ -219,19 +233,12 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
                 .into(mImageArtwork);
     }
 
-    private void goToSearchScreen() {
-        SearchFragment searchFragment = SearchFragment.newInstance();
-        SearchPresenter searchPresenter = new SearchPresenter();
-        searchPresenter.setView(searchFragment);
-        replaceFragment(R.id.frame_container, searchFragment, true, null);
-    }
-
     private void setupListeners() {
-        getSupportFragmentManager().addOnBackStackChangedListener(this);
         mMiniPlayer.setOnClickListener(this);
         mImagePrevious.setOnClickListener(this);
         mImagePlayPause.setOnClickListener(this);
         mImageNext.setOnClickListener(this);
+        mBottomNavigation.setOnNavigationItemSelectedListener(this);
     }
 
     private void setupReferences() {
