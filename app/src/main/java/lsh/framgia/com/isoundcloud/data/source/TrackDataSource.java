@@ -11,6 +11,10 @@ public interface TrackDataSource {
     }
 
     interface RemoteDataSource {
-        void getTracks(String genre, int offset, int limit, OnResponseListener<List<Track>> listener);
+        void getRemoteTracks(String genre, int offset, int limit,
+                             OnResponseListener<List<Track>> listener);
+
+        void getSearchTracks(String query, int offset, int limit,
+                             OnResponseListener<List<Track>> listener);
     }
 }

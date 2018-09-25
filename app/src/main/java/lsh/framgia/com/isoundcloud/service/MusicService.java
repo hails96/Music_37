@@ -96,9 +96,7 @@ public class MusicService extends Service {
                 .setContentTitle(track.getTitle())
                 .setContentText(track.getArtist())
                 .setContentIntent(PendingIntent.getActivity(this, DEFAULT_REQUEST_CODE,
-                        new Intent(this, PlayerActivity.class), DEFAULT_FLAG))
-                .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
-                        .setShowActionsInCompactView(1));
+                        new Intent(this, PlayerActivity.class), DEFAULT_FLAG));
         displayTrackArtwork();
         addActionForNotification();
         Notification notification = mBuilder.build();
@@ -208,6 +206,8 @@ public class MusicService extends Service {
         }
         mBuilder.addAction(R.drawable.ic_skip_next, getString(R.string.action_next),
                 createNewPendingIntent(ACTION_NEXT));
+        mBuilder.setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
+                .setShowActionsInCompactView(1));
     }
 
     private void displayTrackArtwork() {
