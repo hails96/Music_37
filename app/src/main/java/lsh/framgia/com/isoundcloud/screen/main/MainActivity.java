@@ -140,6 +140,16 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
     }
 
     @Override
+    public void onLoopModeChanged(int loopMode) {
+
+    }
+
+    @Override
+    public void onShuffleModeChanged(int shuffleMode) {
+
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.layout_mini_player:

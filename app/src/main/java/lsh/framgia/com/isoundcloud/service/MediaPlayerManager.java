@@ -4,8 +4,12 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import lsh.framgia.com.isoundcloud.constant.LoopMode;
+import lsh.framgia.com.isoundcloud.constant.ShuffleMode;
 import lsh.framgia.com.isoundcloud.constant.TrackState;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.util.StringUtils;
@@ -20,9 +24,12 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
     private static MediaPlayerManager sInstance;
     private MusicService mMusicService;
     private MediaPlayer mMediaPlayer;
-    private List<Track> mPlaylist;
+    private List<Track> mOriginalPlaylist;
+    private List<Track> mShufflePlaylist;
     private int mCurrentTrackPosition;
     private int mTrackState;
+    private int mShuffleMode = ShuffleMode.OFF;
+    private int mLoopMode = LoopMode.OFF;
 
     static synchronized MediaPlayerManager getInstance(MusicService musicService) {
         if (sInstance == null) {
@@ -52,9 +59,15 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        mMediaPlayer.reset();
         setTrackState(TrackState.INVALID);
-        playNextTrack();
+        if (mLoopMode == LoopMode.OFF && mCurrentTrackPosition == getPlaylist().size() - 1) return;
+
+        mMediaPlayer.reset();
+        if (mLoopMode == LoopMode.ONE) {
+            playTrack(getPlaylist().get(mCurrentTrackPosition));
+        } else {
+            playNextTrack();
+        }
     }
 
     public void playTrack(Track track) {
@@ -70,7 +83,7 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
             setTrackState(TrackState.PREPARING);
             mMediaPlayer.setDataSource(StringUtils.formatStreamUrl(track.getUri()));
             mMediaPlayer.prepareAsync();
-            mCurrentTrackPosition = mPlaylist.indexOf(track);
+            mCurrentTrackPosition = findCurrentTrackPosition(track);
             mMusicService.onNewTrackRequested(getCurrentTrack());
             mMusicService.showNotification(getCurrentTrack());
         } catch (IOException e) {
@@ -79,15 +92,13 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
     }
 
     public void playNextTrack() {
-        int nextTrackPosition =
-                mCurrentTrackPosition == (mPlaylist.size() - 1) ? 0 : ++mCurrentTrackPosition;
-        playTrack(mPlaylist.get(nextTrackPosition));
+        int nextTrackPosition = findNextTrackPosition(getPlaylist());
+        playTrack(getPlaylist().get(nextTrackPosition));
     }
 
     public void playPreviousTrack() {
-        int previousTrackPosition =
-                mCurrentTrackPosition == 0 ? mPlaylist.size() - 1 : --mCurrentTrackPosition;
-        playTrack(mPlaylist.get(previousTrackPosition));
+        int previousTrackPosition = findPreviousTrackPosition(getPlaylist());
+        playTrack(getPlaylist().get(previousTrackPosition));
     }
 
     public void handleAction(String action) {
@@ -99,7 +110,8 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
                 playPreviousTrack();
                 break;
             case ACTION_STATE_CHANGE:
-                if (mTrackState == TrackState.INVALID || mTrackState == TrackState.PREPARING) return;
+                if (mTrackState == TrackState.INVALID || mTrackState == TrackState.PREPARING)
+                    return;
                 if (isPlaying()) stopPlayingMusic();
                 else resumePlayingMusic();
                 break;
@@ -121,20 +133,52 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
         mMusicService.onTrackResumed();
     }
 
+    public void changeLoopMode() {
+        switch (mLoopMode) {
+            case LoopMode.OFF:
+                mLoopMode = LoopMode.ONE;
+                break;
+            case LoopMode.ONE:
+                mLoopMode = LoopMode.ALL;
+                break;
+            case LoopMode.ALL:
+                mLoopMode = LoopMode.OFF;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void changeShuffleMode() {
+        switch (mShuffleMode) {
+            case ShuffleMode.OFF:
+                mShuffleMode = ShuffleMode.ON;
+                mShufflePlaylist = new ArrayList<>(mOriginalPlaylist);
+                Collections.shuffle(mShufflePlaylist);
+                break;
+            case ShuffleMode.ON:
+                mShuffleMode = ShuffleMode.OFF;
+                break;
+            default:
+                break;
+        }
+    }
+
     public void releasePlayer() {
         if (mMediaPlayer != null) mMediaPlayer.release();
     }
 
     public Track getCurrentTrack() {
-        return mPlaylist != null ? mPlaylist.get(mCurrentTrackPosition) : null;
+        return getPlaylist() != null ? getPlaylist().get(mCurrentTrackPosition) : null;
     }
 
     public void setPlaylist(List<Track> tracks) {
-        mPlaylist = tracks;
+        mOriginalPlaylist = tracks;
+        mShufflePlaylist = new ArrayList<>();
     }
 
     public List<Track> getPlaylist() {
-        return mPlaylist;
+        return mShuffleMode == ShuffleMode.OFF ? mOriginalPlaylist : mShufflePlaylist;
     }
 
     public void seekTo(int progress) {
@@ -155,6 +199,27 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
 
     public int getTrackState() {
         return mTrackState;
+    }
+
+    public int getLoopMode() {
+        return mLoopMode;
+    }
+
+    public int getShuffleMode() {
+        return mShuffleMode;
+    }
+
+    private int findPreviousTrackPosition(List<Track> tracks) {
+        return mCurrentTrackPosition == 0 ? tracks.size() - 1 : --mCurrentTrackPosition;
+    }
+
+    private int findCurrentTrackPosition(Track track) {
+        return mShuffleMode ==
+                ShuffleMode.OFF ? mOriginalPlaylist.indexOf(track) : mShufflePlaylist.indexOf(track);
+    }
+
+    private int findNextTrackPosition(List<Track> tracks) {
+        return mCurrentTrackPosition == tracks.size() - 1 ? 0 : ++mCurrentTrackPosition;
     }
 
     private void initMediaPlayer() {
