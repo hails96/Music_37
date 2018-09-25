@@ -5,8 +5,6 @@ import java.util.List;
 import lsh.framgia.com.isoundcloud.base.asynctask.BaseFetchingAsyncTask;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.data.source.TrackDataSource;
-import lsh.framgia.com.isoundcloud.data.source.local.TrackLocalDataSource;
-import lsh.framgia.com.isoundcloud.data.source.remote.TrackRemoteDataSource;
 
 public class TrackRepository implements TrackDataSource.LocalDataSource, TrackDataSource.RemoteDataSource {
 
@@ -29,8 +27,14 @@ public class TrackRepository implements TrackDataSource.LocalDataSource, TrackDa
     }
 
     @Override
-    public void getTracks(String genre, int offset, int limit,
-                          BaseFetchingAsyncTask.OnResponseListener<List<Track>> listener) {
-        mTrackRemoteDataSource.getTracks(genre, offset, limit, listener);
+    public void getRemoteTracks(String genre, int offset, int limit,
+                                BaseFetchingAsyncTask.OnResponseListener<List<Track>> listener) {
+        mTrackRemoteDataSource.getRemoteTracks(genre, offset, limit, listener);
+    }
+
+    @Override
+    public void getSearchTracks(String query, int offset, int limit,
+                                BaseFetchingAsyncTask.OnResponseListener<List<Track>> listener) {
+        mTrackRemoteDataSource.getSearchTracks(query, offset, limit, listener);
     }
 }

@@ -13,6 +13,8 @@ public class Constant {
             "https://api-v2.soundcloud.com/charts?kind=top&genre=soundcloud%%3Agenres%%3A%s&" +
                     "&client_id=%s&offset=%d&limit=%d";
     public static final String FORMAT_STREAM_URL = "%s/stream?client_id=%s";
+    public static final String FORMAT_SEARCH_URL =
+            "http://api.soundcloud.com/tracks?client_id=%s&q=%s&offset=%s&limit=%s";
     public static final String FORMAT_DURATION = "%02d:%02d";
 
     public static final String NEW_LINE = "\n";

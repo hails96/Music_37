@@ -13,6 +13,16 @@ public class StringUtils {
                 genre, BuildConfig.ApiKey, offset, limit);
     }
 
+    public static String formatStreamUrl(String uri) {
+        return String.format(Locale.ENGLISH, Constant.FORMAT_STREAM_URL,
+                uri, BuildConfig.ApiKey);
+    }
+
+    public static String formatSearchingTrackUrl(String query, int offset, int limit) {
+        return String.format(Locale.ENGLISH, Constant.FORMAT_SEARCH_URL,
+                BuildConfig.ApiKey, query, offset, limit);
+    }
+
     public static String convertMillisToDuration(int millis) {
         return String.format(
                 Locale.ENGLISH,
@@ -24,10 +34,5 @@ public class StringUtils {
 
     public static String getOriginalUrl(String artworkUrl) {
         return artworkUrl.replace(Constant.TEXT_LARGE, Constant.TEXT_ORIGINAL);
-    }
-
-    public static String formatStreamUrl(String uri) {
-        return String.format(Locale.ENGLISH, Constant.FORMAT_STREAM_URL,
-                uri, BuildConfig.ApiKey);
     }
 }
