@@ -47,4 +47,8 @@ public class StringUtils {
     public static String formatDoubleWhereClause(String clause1, String clause2) {
         return String.format(Locale.ENGLISH, Constant.FORMAT_DOUBLE_WHERE_CLAUSE, clause1, clause2);
     }
+
+    public static boolean isEmpty(String s) {
+        return s == null || s.isEmpty();
+    }
 }

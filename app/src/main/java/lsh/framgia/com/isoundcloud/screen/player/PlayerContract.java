@@ -6,7 +6,9 @@ import lsh.framgia.com.isoundcloud.data.model.Track;
 
 public class PlayerContract {
     interface View extends IView<Presenter> {
+        void onUpdateDownloadedTrackFailure(String msg);
 
+        void updateFavoriteSuccess(boolean isFavorite);
     }
 
     interface Presenter extends IPresenter<View> {
@@ -15,5 +17,9 @@ public class PlayerContract {
         void saveTrack(Track track);
 
         boolean checkDownloadedTrack(Track track);
+
+        void updateFavorite(Track track);
+
+        boolean isFavoriteTrack(Track track);
     }
 }

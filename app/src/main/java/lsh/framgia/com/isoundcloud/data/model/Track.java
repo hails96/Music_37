@@ -24,6 +24,10 @@ public class Track implements Parcelable {
     private boolean mIsDownloaded;
     private long mRequestId;
 
+    public Track() {
+
+    }
+
     public Track(JSONObject trackObject) {
         JSONObject publisherObject = trackObject.optJSONObject(TrackEntity.PUBLISHER_METADATA);
         mId = trackObject.optString(TrackEntity.ID);

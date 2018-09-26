@@ -39,8 +39,8 @@ public class TrackRepository implements TrackDataSource.LocalDataSource, TrackDa
     }
 
     @Override
-    public void saveTrackToDatabase(Track track, TrackDataSource.OnLocalResponseListener listener) {
-        mTrackLocalDataSource.saveTrackToDatabase(track, listener);
+    public void saveTrackToDatabase(Track track) {
+        mTrackLocalDataSource.saveTrackToDatabase(track);
     }
 
     @Override
@@ -49,7 +49,17 @@ public class TrackRepository implements TrackDataSource.LocalDataSource, TrackDa
     }
 
     @Override
-    public boolean isTrackDownloaded(Track track) {
-        return mTrackLocalDataSource.isTrackDownloaded(track);
+    public boolean isDownloadedTrack(Track track) {
+        return mTrackLocalDataSource.isDownloadedTrack(track);
+    }
+
+    @Override
+    public boolean isFavoriteTrack(Track track) {
+        return mTrackLocalDataSource.isFavoriteTrack(track);
+    }
+
+    @Override
+    public void updateFavoriteTrack(Track track, TrackDataSource.OnLocalResponseListener<Boolean> listener) {
+        mTrackLocalDataSource.updateFavoriteTrack(track, listener);
     }
 }

@@ -7,11 +7,15 @@ import lsh.framgia.com.isoundcloud.data.model.Track;
 
 public interface TrackDataSource {
     interface LocalDataSource {
-        void saveTrackToDatabase(Track track, OnLocalResponseListener listener);
+        void saveTrackToDatabase(Track track);
 
         void updateDownloadedTrack(long requestId, OnLocalResponseListener listener);
 
-        boolean isTrackDownloaded(Track track);
+        boolean isDownloadedTrack(Track track);
+
+        boolean isFavoriteTrack(Track track);
+
+        void updateFavoriteTrack(Track track, OnLocalResponseListener<Boolean> listener);
     }
 
     interface RemoteDataSource {
@@ -22,8 +26,8 @@ public interface TrackDataSource {
                              OnResponseListener<List<Track>> listener);
     }
 
-    interface OnLocalResponseListener {
-        void onSuccess();
+    interface OnLocalResponseListener<R> {
+        void onSuccess(R result);
 
         void onFailure(String msg);
     }

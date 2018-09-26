@@ -83,8 +83,10 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     @Override
     protected void initLayout() {
         mTrack = getIntent().getParcelableExtra(EXTRA_TRACK);
-        setPresenter(new PlayerPresenter(TrackRepository.getInstance(
-                TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance(this))));
+        PlayerPresenter playerPresenter = new PlayerPresenter(TrackRepository.getInstance(
+                TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance(this)));
+        setPresenter(playerPresenter);
+        playerPresenter.setView(this);
         setupPreferences();
         setupListener();
         setupOptions();
@@ -102,6 +104,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
             mMusicService.playTrack(mTrack);
         } else {
             setupView(mMusicService.getCurrentTrack());
+            resetSeekBar(mMusicService.getCurrentTrack());
             updatePlayPauseView(mMusicService.getTrackState());
             mHandler.post(mRunnable);
         }
@@ -127,6 +130,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     public void onNewTrackRequested(Track track) {
         mImagePlayPause.setImageResource(R.drawable.ic_pause);
         setupView(track);
+        resetSeekBar(track);
     }
 
     @Override
@@ -189,6 +193,9 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
             case R.id.image_download:
                 handleDownloadTrack();
                 break;
+            case R.id.image_favorite:
+                handleFavoriteChange();
+                break;
             default:
                 break;
         }
@@ -239,6 +246,26 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         mPresenter.updateDownloadedTrack(requestId);
     }
 
+    @Override
+    public void onUpdateDownloadedTrackFailure(String msg) {
+        if (!StringUtils.isEmpty(msg)) {
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void updateFavoriteSuccess(boolean isFavorite) {
+        if (isFavorite) {
+            Toast.makeText(this, getString(R.string.msg_added_to_favorite),
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, getString(R.string.msg_removed_to_favorite),
+                    Toast.LENGTH_SHORT).show();
+        }
+        mTrack.setIsFavorite(isFavorite);
+        setupView(mTrack);
+    }
+
     public static Intent getPlayerIntent(Context context, Track track) {
         Intent intent = new Intent(context, PlayerActivity.class);
         intent.putExtra(EXTRA_TRACK, track);
@@ -262,6 +289,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         mSeekBarDuration.setOnSeekBarChangeListener(this);
         mImageArrowDown.setOnClickListener(this);
         mImageDownload.setOnClickListener(this);
+        mImageFavorite.setOnClickListener(this);
     }
 
     private void setupOptions() {
@@ -279,6 +307,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
 
     private void setupView(Track track) {
         if (track == null) return;
+        mTrack = track;
         if (mMusicService != null) {
             updatePlayPauseView(mMusicService.getTrackState());
             onLoopModeChanged(mMusicService.getLoopMode());
@@ -287,8 +316,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         displayArtwork(track);
         displayTrackInfo(track);
         updateDownloadableView(track.isDownloadable());
-        updateFavoriteView(track.isFavorite());
-        resetSeekBar(track);
+        updateFavoriteView(mPresenter.isFavoriteTrack(mTrack));
     }
 
     private void updatePlayPauseView(@TrackState int state) {
@@ -351,6 +379,12 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     private void downloadTrack() {
         TrackDownloadManager.getInstance(this, this).downloadTrack(mTrack);
         mPresenter.saveTrack(mTrack);
+    }
+
+    private void handleFavoriteChange() {
+        if (mTrack == null) return;
+        mTrack.setIsFavorite(!mTrack.isFavorite());
+        mPresenter.updateFavorite(mTrack);
     }
 
     private void checkWriteStoragePermission() {
