@@ -175,7 +175,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
         getSupportActionBar().hide();
         SearchFragment searchFragment = SearchFragment.newInstance();
         SearchPresenter searchPresenter = new SearchPresenter(TrackRepository.getInstance(
-                TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance()
+                TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance(this)
         ));
         searchPresenter.setView(searchFragment);
         replaceFragment(R.id.frame_container, searchFragment, false, null);

@@ -1,8 +1,11 @@
 package lsh.framgia.com.isoundcloud.base.mvp;
 
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -10,7 +13,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
+import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.service.MusicService;
 import lsh.framgia.com.isoundcloud.service.OnMediaPlayerStatusListener;
 import lsh.framgia.com.isoundcloud.util.DialogUtils;
@@ -21,6 +26,7 @@ public abstract class BaseActivity<P extends IPresenter> extends AppCompatActivi
     protected MusicService mMusicService;
     protected ServiceConnection mServiceConnection;
     protected boolean mIsBound;
+    protected BroadcastReceiver mOnDownloadCompleteReceiver;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,6 +34,9 @@ public abstract class BaseActivity<P extends IPresenter> extends AppCompatActivi
         setContentView(getLayoutId());
         prepareServiceConnection();
         initLayout();
+        setupReceiver();
+        registerReceiver(mOnDownloadCompleteReceiver,
+                new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
     @Override
@@ -62,6 +71,7 @@ public abstract class BaseActivity<P extends IPresenter> extends AppCompatActivi
         super.onDestroy();
         unbindService(mServiceConnection);
         mIsBound = false;
+        unregisterReceiver(mOnDownloadCompleteReceiver);
     }
 
     public void replaceFragment(int containerId, Fragment fragment,
@@ -71,6 +81,21 @@ public abstract class BaseActivity<P extends IPresenter> extends AppCompatActivi
         if (addToBackStack) transaction.addToBackStack(tag);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.commit();
+    }
+
+    private void setupReceiver() {
+        mOnDownloadCompleteReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getPackage() != null &&
+                        intent.getPackage().equalsIgnoreCase(getPackageName())) {
+                    Toast.makeText(context, getString(R.string.msg_downloaded_track),
+                            Toast.LENGTH_SHORT).show();
+                    updateDownloadedTrack(
+                            intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1));
+                }
+            }
+        };
     }
 
     private void prepareServiceConnection() {
@@ -91,6 +116,9 @@ public abstract class BaseActivity<P extends IPresenter> extends AppCompatActivi
         Intent intent = new Intent(this, MusicService.class);
         bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
         startService(intent);
+    }
+
+    protected void updateDownloadedTrack(long requestId) {
     }
 
     protected abstract int getLayoutId();

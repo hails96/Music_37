@@ -23,5 +23,10 @@
     <string name="action_state_change">Play/Pause</string>
     <string name="action_next">Next</string>
     <string name="error_player">There has been an error with the player, please try another track.</string>
-    <string name="text_search_track">Search track...</string>
+    <string name="text_search_track">Search track…</string>
+    <string name="error_download_track">Can&apos;t download the track.</string>
+    <string name="msg_downloading_track">Downloading %s.</string>
+    <string name="msg_downloaded_track">Download completed.</string>
+    <string name="error_update_downloaded_track">Can&apos;t update the status of downloaded track.</string>
+    <string name="msg_already_downloaded">You had already downloaded this track.</string>
 </resources>

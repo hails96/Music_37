@@ -3,6 +3,7 @@ package lsh.framgia.com.isoundcloud.constant;
 import android.support.annotation.StringDef;
 
 @StringDef({
+        TrackEntity.TABLE_NAME,
         TrackEntity.ID,
         TrackEntity.COLLECTION,
         TrackEntity.TRACK,
@@ -15,10 +16,13 @@ import android.support.annotation.StringDef;
         TrackEntity.ARTIST,
         TrackEntity.TITLE,
         TrackEntity.URI,
-        TrackEntity.IS_DOWNLOADABLE
+        TrackEntity.IS_FAVORITE,
+        TrackEntity.IS_DOWNLOADED,
+        TrackEntity.REQUEST_ID
 })
 
 public @interface TrackEntity {
+    String TABLE_NAME = "Track";
     String ID = "id";
     String COLLECTION = "collection";
     String TRACK = "track";
@@ -32,4 +36,6 @@ public @interface TrackEntity {
     String TITLE = "title";
     String URI = "uri";
     String IS_FAVORITE = "is_favorite";
+    String IS_DOWNLOADED = "is_downloaded";
+    String REQUEST_ID = "request_id";
 }

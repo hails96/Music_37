@@ -16,6 +16,9 @@ public class Constant {
     public static final String FORMAT_SEARCH_URL =
             "http://api.soundcloud.com/tracks?client_id=%s&q=%s&offset=%s&limit=%s";
     public static final String FORMAT_DURATION = "%02d:%02d";
+    public static final String FORMAT_TRACK_FILE = "%s.mp3";
+    public static final String FORMAT_SINGLE_WHERE_CLAUSE = "%s = ?";
+    public static final String FORMAT_DOUBLE_WHERE_CLAUSE = "%s = ? AND %s = ?";
 
     public static final String NEW_LINE = "\n";
     public static final String TEXT_LARGE = "large";

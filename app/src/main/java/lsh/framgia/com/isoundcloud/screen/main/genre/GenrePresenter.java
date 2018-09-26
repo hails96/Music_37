@@ -29,8 +29,8 @@ public class GenrePresenter extends BasePresenter<GenreContract.View>
     @Override
     public void getTracks() {
         if (mTrackRepository == null) {
-            mTrackRepository = TrackRepository.getInstance(
-                    TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance());
+            mTrackRepository = TrackRepository.getInstance(TrackRemoteDataSource.getInstance(),
+                    TrackLocalDataSource.getInstance(mView.getViewContext()));
         }
         mTrackRepository.getRemoteTracks(mGenre.getKey(), mOffset, LIMIT_PER_PAGE, this);
     }
