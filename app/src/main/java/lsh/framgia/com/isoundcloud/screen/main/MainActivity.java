@@ -26,16 +26,19 @@ import lsh.framgia.com.isoundcloud.data.source.local.TrackLocalDataSource;
 import lsh.framgia.com.isoundcloud.data.source.remote.TrackRemoteDataSource;
 import lsh.framgia.com.isoundcloud.screen.main.home.HomeFragment;
 import lsh.framgia.com.isoundcloud.screen.main.home.HomePresenter;
+import lsh.framgia.com.isoundcloud.screen.main.library.LibraryFragment;
+import lsh.framgia.com.isoundcloud.screen.main.library.LibraryPresenter;
 import lsh.framgia.com.isoundcloud.screen.main.search.SearchFragment;
 import lsh.framgia.com.isoundcloud.screen.main.search.SearchPresenter;
 import lsh.framgia.com.isoundcloud.screen.player.PlayerActivity;
 import lsh.framgia.com.isoundcloud.service.OnMediaPlayerStatusListener;
 
 public class MainActivity extends BaseActivity<MainContract.Presenter> implements MainContract.View,
-        OnMediaPlayerStatusListener, View.OnClickListener,
+        OnMediaPlayerStatusListener, View.OnClickListener, OnToolbarChangeListener,
         BottomNavigationView.OnNavigationItemSelectedListener {
 
     private Toolbar mToolbar;
+    private TextView mTextToolbarTitle;
     private BottomNavigationView mBottomNavigation;
     private ConstraintLayout mMiniPlayer;
     private TextView mTrackTitle;
@@ -149,8 +152,18 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
         }
     }
 
+    @Override
+    public void onTitleChange(String title) {
+        setToolbarTitle(title);
+    }
+
     public void setPlaylist(List<Track> tracks) {
         mMusicService.setPlaylist(tracks);
+    }
+
+    public void setToolbarTitle(String title) {
+        getSupportActionBar().show();
+        mTextToolbarTitle.setText(title);
     }
 
     public void showActionAndBottomBar(boolean isShown) {
@@ -168,7 +181,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
         HomePresenter homePresenter = new HomePresenter();
         homePresenter.setView(homeFragment);
         replaceFragment(R.id.frame_container, homeFragment, false, null);
-        getSupportActionBar().show();
+        setToolbarTitle(getString(R.string.label_home));
     }
 
     private void replaceSearchFragment() {
@@ -182,7 +195,11 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
     }
 
     private void replaceLibraryFragment() {
-        // TODO: open library screen
+        LibraryFragment libraryFragment = LibraryFragment.newInstance();
+        LibraryPresenter libraryPresenter = new LibraryPresenter();
+        libraryPresenter.setView(libraryFragment);
+        replaceFragment(R.id.frame_container, libraryFragment, false, null);
+        setToolbarTitle(getString(R.string.label_library));
     }
 
     private void handlePlayerActionChanged() {
@@ -243,6 +260,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
 
     private void setupReferences() {
         mToolbar = findViewById(R.id.toolbar_genre);
+        mTextToolbarTitle = findViewById(R.id.text_toolbar_genre);
         mBottomNavigation = findViewById(R.id.bottom_navigation);
         mMiniPlayer = findViewById(R.id.layout_mini_player);
         mTrackTitle = mMiniPlayer.findViewById(R.id.text_mini_player_title);
