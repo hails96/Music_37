@@ -35,4 +35,16 @@ public class StringUtils {
     public static String getOriginalUrl(String artworkUrl) {
         return artworkUrl.replace(Constant.TEXT_LARGE, Constant.TEXT_ORIGINAL);
     }
+
+    public static String formatTrackFile(String fileName) {
+        return String.format(Locale.ENGLISH, Constant.FORMAT_TRACK_FILE, fileName);
+    }
+
+    public static String formatSingleWhereClause(String clause) {
+        return String.format(Locale.ENGLISH, Constant.FORMAT_SINGLE_WHERE_CLAUSE, clause);
+    }
+
+    public static String formatDoubleWhereClause(String clause1, String clause2) {
+        return String.format(Locale.ENGLISH, Constant.FORMAT_DOUBLE_WHERE_CLAUSE, clause1, clause2);
+    }
 }

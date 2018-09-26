@@ -21,6 +21,8 @@ public class Track implements Parcelable {
     private String mDescription;
     private int mGenreArtworkResId;
     private boolean mIsFavorite;
+    private boolean mIsDownloaded;
+    private long mRequestId;
 
     public Track(JSONObject trackObject) {
         JSONObject publisherObject = trackObject.optJSONObject(TrackEntity.PUBLISHER_METADATA);
@@ -50,6 +52,8 @@ public class Track implements Parcelable {
         mDescription = in.readString();
         mGenreArtworkResId = in.readInt();
         mIsFavorite = in.readByte() != 0;
+        mIsDownloaded = in.readByte() != 0;
+        mRequestId = in.readLong();
     }
 
     @Override
@@ -66,6 +70,8 @@ public class Track implements Parcelable {
         dest.writeString(mDescription);
         dest.writeInt(mGenreArtworkResId);
         dest.writeByte((byte) (mIsFavorite ? 1 : 0));
+        dest.writeByte((byte) (mIsDownloaded ? 1 : 0));
+        dest.writeLong(mRequestId);
     }
 
     @Override
@@ -185,5 +191,21 @@ public class Track implements Parcelable {
 
     public void setIsFavorite(boolean isFavorite) {
         mIsFavorite = isFavorite;
+    }
+
+    public boolean isDownloaded() {
+        return mIsDownloaded;
+    }
+
+    public void setIsDownloaded(boolean isDownloaded) {
+        mIsDownloaded = isDownloaded;
+    }
+
+    public long getRequestId() {
+        return mRequestId;
+    }
+
+    public void setRequestId(long requestId) {
+        mRequestId = requestId;
     }
 }

@@ -1,8 +1,13 @@
 package lsh.framgia.com.isoundcloud.screen.player;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -19,15 +24,20 @@ import lsh.framgia.com.isoundcloud.constant.LoopMode;
 import lsh.framgia.com.isoundcloud.constant.ShuffleMode;
 import lsh.framgia.com.isoundcloud.constant.TrackState;
 import lsh.framgia.com.isoundcloud.data.model.Track;
+import lsh.framgia.com.isoundcloud.data.repository.TrackRepository;
+import lsh.framgia.com.isoundcloud.data.source.local.TrackLocalDataSource;
+import lsh.framgia.com.isoundcloud.data.source.remote.TrackDownloadManager;
+import lsh.framgia.com.isoundcloud.data.source.remote.TrackRemoteDataSource;
 import lsh.framgia.com.isoundcloud.service.OnMediaPlayerStatusListener;
 import lsh.framgia.com.isoundcloud.util.StringUtils;
 
 public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         implements PlayerContract.View, OnMediaPlayerStatusListener, View.OnClickListener,
-        SeekBar.OnSeekBarChangeListener {
+        SeekBar.OnSeekBarChangeListener, TrackDownloadManager.OnDownloadListener {
 
     public static final String EXTRA_TRACK = "lsh.framgia.com.isoundcloud.EXTRA_TRACK";
     private static final int DELAY_TIME = 1000;
+    private static final int WRITE_EXTERNAL_STORAGE_CODE = 100;
 
     private ImageView mImageBackground;
     private ImageView mImageArrowDown;
@@ -73,7 +83,8 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     @Override
     protected void initLayout() {
         mTrack = getIntent().getParcelableExtra(EXTRA_TRACK);
-        setPresenter(new PlayerPresenter());
+        setPresenter(new PlayerPresenter(TrackRepository.getInstance(
+                TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance(this))));
         setupPreferences();
         setupListener();
         setupOptions();
@@ -175,6 +186,9 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
             case R.id.image_arrow_down:
                 finish();
                 break;
+            case R.id.image_download:
+                handleDownloadTrack();
+                break;
             default:
                 break;
         }
@@ -187,13 +201,42 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-
+        mHandler.removeCallbacks(mRunnable);
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         mMusicService.seekTo(seekBar.getProgress());
         mTextCurrentDuration.setText(StringUtils.convertMillisToDuration(seekBar.getProgress()));
+        mHandler.post(mRunnable);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case WRITE_EXTERNAL_STORAGE_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    downloadTrack();
+                } else {
+                    Toast.makeText(this, getString(R.string.error_download_track),
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onDownload(Track track) {
+        mTrack.setRequestId(track.getRequestId());
+    }
+
+    @Override
+    protected void updateDownloadedTrack(long requestId) {
+        super.updateDownloadedTrack(requestId);
+        if (requestId == -1) return;
+        mPresenter.updateDownloadedTrack(requestId);
     }
 
     public static Intent getPlayerIntent(Context context, Track track) {
@@ -218,6 +261,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         mImageShuffle.setOnClickListener(this);
         mSeekBarDuration.setOnSeekBarChangeListener(this);
         mImageArrowDown.setOnClickListener(this);
+        mImageDownload.setOnClickListener(this);
     }
 
     private void setupOptions() {
@@ -281,8 +325,10 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     private void updateDownloadableView(boolean isDownloadable) {
         if (isDownloadable) {
             mImageDownload.setImageResource(R.drawable.ic_downloadable);
+            mImageDownload.setClickable(true);
         } else {
             mImageDownload.setImageResource(R.drawable.ic_not_downloadable);
+            mImageDownload.setClickable(false);
         }
     }
 
@@ -291,6 +337,30 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
             mImageFavorite.setImageResource(R.drawable.ic_favorite);
         } else {
             mImageFavorite.setImageResource(R.drawable.ic_not_favorite);
+        }
+    }
+
+    private void handleDownloadTrack() {
+        if (!mPresenter.checkDownloadedTrack(mTrack)) {
+            checkWriteStoragePermission();
+        } else {
+            Toast.makeText(this, getString(R.string.msg_already_downloaded), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void downloadTrack() {
+        TrackDownloadManager.getInstance(this, this).downloadTrack(mTrack);
+        mPresenter.saveTrack(mTrack);
+    }
+
+    private void checkWriteStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    WRITE_EXTERNAL_STORAGE_CODE);
+        } else {
+            downloadTrack();
         }
     }
 
@@ -304,7 +374,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     private void setupPreferences() {
         mImageBackground = findViewById(R.id.image_transparent);
         mImageArrowDown = findViewById(R.id.image_arrow_down);
-        mImageArrowDown = findViewById(R.id.image_alarm_clock);
+        mImageAlarmClock = findViewById(R.id.image_alarm_clock);
         mImageArtwork = findViewById(R.id.image_artwork);
         mTextTrackTitle = findViewById(R.id.text_track_title);
         mTextTrackArtist = findViewById(R.id.text_track_artist);
