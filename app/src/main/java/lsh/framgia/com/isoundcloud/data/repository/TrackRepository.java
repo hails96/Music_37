@@ -37,4 +37,29 @@ public class TrackRepository implements TrackDataSource.LocalDataSource, TrackDa
                                 BaseFetchingAsyncTask.OnResponseListener<List<Track>> listener) {
         mTrackRemoteDataSource.getSearchTracks(query, offset, limit, listener);
     }
+
+    @Override
+    public void saveTrackToDatabase(Track track) {
+        mTrackLocalDataSource.saveTrackToDatabase(track);
+    }
+
+    @Override
+    public void updateDownloadedTrack(long requestId, TrackDataSource.OnLocalResponseListener listener) {
+        mTrackLocalDataSource.updateDownloadedTrack(requestId, listener);
+    }
+
+    @Override
+    public boolean isDownloadedTrack(Track track) {
+        return mTrackLocalDataSource.isDownloadedTrack(track);
+    }
+
+    @Override
+    public boolean isFavoriteTrack(Track track) {
+        return mTrackLocalDataSource.isFavoriteTrack(track);
+    }
+
+    @Override
+    public void updateFavoriteTrack(Track track, TrackDataSource.OnLocalResponseListener<Boolean> listener) {
+        mTrackLocalDataSource.updateFavoriteTrack(track, listener);
+    }
 }
