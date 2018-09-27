@@ -28,6 +28,8 @@ import lsh.framgia.com.isoundcloud.data.repository.TrackRepository;
 import lsh.framgia.com.isoundcloud.data.source.local.TrackLocalDataSource;
 import lsh.framgia.com.isoundcloud.data.source.remote.TrackDownloadManager;
 import lsh.framgia.com.isoundcloud.data.source.remote.TrackRemoteDataSource;
+import lsh.framgia.com.isoundcloud.screen.player.nowplaying.NowPlayingFragment;
+import lsh.framgia.com.isoundcloud.screen.player.nowplaying.NowPlayingPresenter;
 import lsh.framgia.com.isoundcloud.service.OnMediaPlayerStatusListener;
 import lsh.framgia.com.isoundcloud.util.StringUtils;
 
@@ -91,6 +93,12 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         setupListener();
         setupOptions();
         setupView(mTrack);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_top);
     }
 
     @Override
@@ -188,7 +196,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
                 mMusicService.changeShuffleMode();
                 break;
             case R.id.image_arrow_down:
-                finish();
+                onBackPressed();
                 break;
             case R.id.image_download:
                 handleDownloadTrack();
@@ -196,6 +204,8 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
             case R.id.image_favorite:
                 handleFavoriteChange();
                 break;
+            case R.id.image_now_playing:
+                openNowPlaying();
             default:
                 break;
         }
@@ -290,6 +300,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         mImageArrowDown.setOnClickListener(this);
         mImageDownload.setOnClickListener(this);
         mImageFavorite.setOnClickListener(this);
+        mImageNowPlaying.setOnClickListener(this);
     }
 
     private void setupOptions() {
@@ -366,6 +377,16 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         } else {
             mImageFavorite.setImageResource(R.drawable.ic_not_favorite);
         }
+    }
+
+    private void openNowPlaying() {
+        NowPlayingFragment fragment = NowPlayingFragment.newInstance();
+        NowPlayingPresenter presenter = new NowPlayingPresenter();
+        presenter
+                .setPlaylist(mMusicService.getPlaylist())
+                .setCurrentTrack(mMusicService.getCurrentTrack())
+                .setView(fragment);
+        fragment.show(getSupportFragmentManager(), NowPlayingFragment.class.getSimpleName());
     }
 
     private void handleDownloadTrack() {
