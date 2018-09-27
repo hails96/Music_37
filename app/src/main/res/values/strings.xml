@@ -33,4 +33,6 @@
     <string name="msg_removed_to_favorite">Removed to favorite.</string>
     <string name="text_downloaded_tracks">Downloaded tracks</string>
     <string name="text_favorite_tracks">Favorite tracks</string>
+    <string name="text_playlist">Playlist</string>
+    <string name="text_delete">Delete</string>
 </resources>
