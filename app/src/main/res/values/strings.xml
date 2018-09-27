@@ -31,4 +31,6 @@
     <string name="msg_already_downloaded">You had already downloaded this track.</string>
     <string name="msg_added_to_favorite">Added to favorite.</string>
     <string name="msg_removed_to_favorite">Removed to favorite.</string>
+    <string name="text_downloaded_tracks">Downloaded tracks</string>
+    <string name="text_favorite_tracks">Favorite tracks</string>
 </resources>
