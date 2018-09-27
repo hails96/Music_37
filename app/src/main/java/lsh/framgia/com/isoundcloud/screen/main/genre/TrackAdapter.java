@@ -1,6 +1,7 @@
 package lsh.framgia.com.isoundcloud.screen.main.genre;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,10 +21,11 @@ import lsh.framgia.com.isoundcloud.util.StringUtils;
 
 public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHolder> {
 
-    private Context mContext;
-    private LayoutInflater mInflater;
-    private List<Track> mTracks;
-    private OnTrackItemClickListener mOnTrackItemClickListener;
+    protected Context mContext;
+    protected LayoutInflater mInflater;
+    protected List<Track> mTracks;
+    protected OnTrackItemClickListener mOnTrackItemClickListener;
+    protected Track mCurrentTrack;
 
     public TrackAdapter(Context context, List<Track> tracks) {
         mContext = context;
@@ -39,7 +41,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
 
     @Override
     public void onBindViewHolder(@NonNull TrackViewHolder holder, int position) {
-        holder.bindData(mContext, mTracks.get(position), mOnTrackItemClickListener);
+        holder.bindData(mContext, mTracks.get(position), mCurrentTrack, mOnTrackItemClickListener);
     }
 
     @Override
@@ -47,9 +49,8 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         return mTracks == null ? 0 : mTracks.size();
     }
 
-    public TrackAdapter setOnTrackItemClickListener(OnTrackItemClickListener listener) {
+    public void setOnTrackItemClickListener(OnTrackItemClickListener listener) {
         mOnTrackItemClickListener = listener;
-        return this;
     }
 
     public void addAll(List<Track> tracks) {
@@ -63,28 +64,35 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
     }
 
     public void setCurrentTrack(Track track) {
-
+        mCurrentTrack = track;
+        notifyDataSetChanged();
     }
 
-    static class TrackViewHolder extends RecyclerView.ViewHolder {
+    protected static class TrackViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView mImageArtwork;
-        private TextView mTextTitle;
-        private TextView mTextArtist;
-        private TextView mTextDuration;
-        private ImageView mImageMenu;
+        protected ImageView mImageArtwork;
+        protected TextView mTextTitle;
+        protected TextView mTextArtist;
+        protected TextView mTextDuration;
+        protected ImageView mImageAction;
 
-        TrackViewHolder(View itemView) {
+        protected TrackViewHolder(View itemView) {
             super(itemView);
             mImageArtwork = itemView.findViewById(R.id.image_artwork);
             mTextTitle = itemView.findViewById(R.id.text_title);
             mTextArtist = itemView.findViewById(R.id.text_artist);
             mTextDuration = itemView.findViewById(R.id.text_duration);
-            mImageMenu = itemView.findViewById(R.id.image_menu);
+            mImageAction = itemView.findViewById(R.id.image_menu);
         }
 
-        void bindData(Context context, final Track track,
-                      final OnTrackItemClickListener listener) {
+        private void bindData(Context context, final Track track, Track currentTrack,
+                              final OnTrackItemClickListener listener) {
+            displayArtwork(context, track);
+            displayTrackInfo(track);
+            setupListeners(track, listener);
+        }
+
+        private void displayArtwork(Context context, Track track) {
             RequestOptions options = new RequestOptions()
                     .centerCrop()
                     .circleCrop()
@@ -94,11 +102,16 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
                     .load(track.getArtworkUrl())
                     .apply(options)
                     .into(mImageArtwork);
+        }
+
+        private void displayTrackInfo(Track track) {
             mTextTitle.setText(track.getTitle());
             mTextArtist.setText(track.getArtist());
             mTextDuration.setText(StringUtils.convertMillisToDuration(track.getDuration()));
+        }
 
-            mImageMenu.setOnClickListener(new View.OnClickListener() {
+        private void setupListeners(final Track track, final OnTrackItemClickListener listener) {
+            mImageAction.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (listener == null) return;
