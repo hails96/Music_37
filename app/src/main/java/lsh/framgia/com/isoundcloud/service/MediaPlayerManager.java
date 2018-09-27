@@ -152,9 +152,7 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
     public void changeShuffleMode() {
         switch (mShuffleMode) {
             case ShuffleMode.OFF:
-                mShuffleMode = ShuffleMode.ON;
-                mShufflePlaylist = new ArrayList<>(mOriginalPlaylist);
-                Collections.shuffle(mShufflePlaylist);
+                handleShuffleOn();
                 break;
             case ShuffleMode.ON:
                 mShuffleMode = ShuffleMode.OFF;
@@ -169,12 +167,16 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
     }
 
     public Track getCurrentTrack() {
-        return getPlaylist() != null ? getPlaylist().get(mCurrentTrackPosition) : null;
+        return getPlaylist() != null && mCurrentTrackPosition != -1 ?
+                getPlaylist().get(mCurrentTrackPosition) : null;
     }
 
     public void setPlaylist(List<Track> tracks) {
+        mCurrentTrackPosition = 0;
+        mTrackState = TrackState.INVALID;
         mOriginalPlaylist = tracks;
-        mShufflePlaylist = new ArrayList<>();
+        mShufflePlaylist = new ArrayList<>(mOriginalPlaylist);
+        Collections.shuffle(mShufflePlaylist);
     }
 
     public List<Track> getPlaylist() {
@@ -182,6 +184,7 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
     }
 
     public void seekTo(int progress) {
+        if (mTrackState != TrackState.PREPARED) return;
         mMediaPlayer.seekTo(progress);
     }
 
@@ -207,6 +210,14 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
 
     public int getShuffleMode() {
         return mShuffleMode;
+    }
+
+    private void handleShuffleOn() {
+        Track currentTrack = getPlaylist().get(mCurrentTrackPosition);
+        mShuffleMode = ShuffleMode.ON;
+        mShufflePlaylist = new ArrayList<>(mOriginalPlaylist);
+        Collections.shuffle(mShufflePlaylist);
+        mCurrentTrackPosition = mShufflePlaylist.indexOf(currentTrack);
     }
 
     private int findPreviousTrackPosition(List<Track> tracks) {

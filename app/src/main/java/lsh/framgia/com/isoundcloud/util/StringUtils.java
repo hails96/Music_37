@@ -14,8 +14,8 @@ public class StringUtils {
     }
 
     public static String formatStreamUrl(String uri) {
-        return String.format(Locale.ENGLISH, Constant.FORMAT_STREAM_URL,
-                uri, BuildConfig.ApiKey);
+        return uri.contains(Constant.TEXT_HTTP) ? String.format
+                (Locale.ENGLISH, Constant.FORMAT_STREAM_URL, uri, BuildConfig.ApiKey) : uri;
     }
 
     public static String formatSearchingTrackUrl(String query, int offset, int limit) {
@@ -46,6 +46,10 @@ public class StringUtils {
 
     public static String formatDoubleWhereClause(String clause1, String clause2) {
         return String.format(Locale.ENGLISH, Constant.FORMAT_DOUBLE_WHERE_CLAUSE, clause1, clause2);
+    }
+
+    public static String formatFilePath(String parentPath, String subPath) {
+        return String.format(Locale.ENGLISH, Constant.FORMAT_FILE_PATH, parentPath, subPath);
     }
 
     public static boolean isEmpty(String s) {
