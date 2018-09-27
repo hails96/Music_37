@@ -5,6 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.constant.TrackEntity;
@@ -112,6 +116,7 @@ public class TrackDatabaseHelper extends SQLiteOpenHelper {
 
     public boolean updateFavoriteTrack(Track track, OnLocalResponseListener listener) {
         SQLiteDatabase database = getWritableDatabase();
+        track.setUri(StringUtils.formatFilePath(Environment.DIRECTORY_MUSIC, track.getTitle()));
         long rowId = database.replace(TrackEntity.TABLE_NAME, null, createValuesForTrack(track));
         if (rowId != -1) {
             listener.onSuccess(track.isFavorite());
@@ -136,5 +141,39 @@ public class TrackDatabaseHelper extends SQLiteOpenHelper {
         values.put(TrackEntity.REQUEST_ID, track.getRequestId());
         values.put(TrackEntity.DESCRIPTION, track.getDescription());
         return values;
+    }
+
+    public void getDownloadedTracks(OnLocalResponseListener<List<Track>> listener) {
+        SQLiteDatabase database = getReadableDatabase();
+        List<Track> tracks = new ArrayList<>();
+        Cursor cursor = database.query(
+                TrackEntity.TABLE_NAME,
+                null,
+                StringUtils.formatSingleWhereClause(TrackEntity.IS_DOWNLOADED),
+                new String[]{String.valueOf(1)},
+                null,
+                null,
+                null
+        );
+        while (cursor.moveToNext()) {
+            Track track = new Track();
+            track.setId(cursor.getString(cursor.getColumnIndex(TrackEntity.ID)));
+            track.setTitle(cursor.getString(cursor.getColumnIndex(TrackEntity.TITLE)));
+            track.setArtist(cursor.getString(cursor.getColumnIndex(TrackEntity.ARTIST)));
+            track.setArtworkUrl(cursor.getString(cursor.getColumnIndex(TrackEntity.ARTWORK_URL)));
+            track.setUri(cursor.getString(cursor.getColumnIndex(TrackEntity.URI)));
+            track.setDuration(cursor.getInt(cursor.getColumnIndex(TrackEntity.DURATION)));
+            int tmp = cursor.getInt(cursor.getInt(cursor.getColumnIndex(TrackEntity.IS_FAVORITE)));
+            track.setIsFavorite(tmp == 1);
+            tmp = cursor.getInt(cursor.getInt(cursor.getColumnIndex(TrackEntity.IS_DOWNLOADED)));
+            track.setIsDownloaded(tmp == 1);
+            tmp = cursor.getInt(cursor.getInt(cursor.getColumnIndex(TrackEntity.IS_DOWNLOADABLE)));
+            track.setIsDownloadable(tmp == 1);
+            track.setRequestId(cursor.getInt(cursor.getColumnIndex(TrackEntity.REQUEST_ID)));
+            track.setDescription(cursor.getString(cursor.getColumnIndex(TrackEntity.DESCRIPTION)));
+            tracks.add(track);
+        }
+        cursor.close();
+        listener.onSuccess(tracks);
     }
 }

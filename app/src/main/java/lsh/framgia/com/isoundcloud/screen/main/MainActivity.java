@@ -35,7 +35,7 @@ import lsh.framgia.com.isoundcloud.service.OnMediaPlayerStatusListener;
 
 public class MainActivity extends BaseActivity<MainContract.Presenter> implements MainContract.View,
         OnMediaPlayerStatusListener, View.OnClickListener, OnToolbarChangeListener,
-        BottomNavigationView.OnNavigationItemSelectedListener {
+        BottomNavigationView.OnNavigationItemSelectedListener, OnPlaylistChangeListener {
 
     private Toolbar mToolbar;
     private TextView mTextToolbarTitle;
@@ -155,6 +155,11 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
     @Override
     public void onTitleChange(String title) {
         setToolbarTitle(title);
+    }
+
+    @Override
+    public void onPlaylistChange(List<Track> playlist) {
+        setPlaylist(playlist);
     }
 
     public void setPlaylist(List<Track> tracks) {
