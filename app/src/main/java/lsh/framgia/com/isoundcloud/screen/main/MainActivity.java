@@ -122,6 +122,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
         switch (v.getId()) {
             case R.id.layout_mini_player:
                 startActivity(new Intent(this, PlayerActivity.class));
+                overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_top);
                 break;
             case R.id.image_mini_player_action:
                 handlePlayerActionChanged();

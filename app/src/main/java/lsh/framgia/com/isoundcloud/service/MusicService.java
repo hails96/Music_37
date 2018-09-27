@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.TaskStackBuilder;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -26,6 +27,7 @@ import lsh.framgia.com.isoundcloud.constant.LoopMode;
 import lsh.framgia.com.isoundcloud.constant.ShuffleMode;
 import lsh.framgia.com.isoundcloud.constant.TrackState;
 import lsh.framgia.com.isoundcloud.data.model.Track;
+import lsh.framgia.com.isoundcloud.screen.main.MainActivity;
 import lsh.framgia.com.isoundcloud.screen.player.PlayerActivity;
 
 import static lsh.framgia.com.isoundcloud.service.MediaPlayerManager.ACTION_NEXT;
@@ -95,8 +97,7 @@ public class MusicService extends Service {
                 .setSmallIcon(R.drawable.ic_app)
                 .setContentTitle(track.getTitle())
                 .setContentText(track.getArtist())
-                .setContentIntent(PendingIntent.getActivity(this, DEFAULT_REQUEST_CODE,
-                        new Intent(this, PlayerActivity.class), DEFAULT_FLAG));
+                .setContentIntent(createPlayerPendingIntent());
         displayTrackArtwork();
         addActionForNotification();
         Notification notification = mBuilder.build();
@@ -172,6 +173,17 @@ public class MusicService extends Service {
     public @ShuffleMode
     int getShuffleMode() {
         return mManager.getShuffleMode();
+    }
+
+    private PendingIntent createPlayerPendingIntent() {
+        Intent mainIntent = new Intent(this, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(mainIntent);
+        Intent playerIntent = new Intent(this, PlayerActivity.class);
+        stackBuilder.addNextIntent(playerIntent);
+        return stackBuilder.getPendingIntent(
+                DEFAULT_FLAG, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private PendingIntent createNewPendingIntent(String action) {
