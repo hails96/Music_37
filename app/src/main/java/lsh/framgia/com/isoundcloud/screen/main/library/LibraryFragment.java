@@ -7,7 +7,9 @@ import android.view.View;
 
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseFragment;
-import lsh.framgia.com.isoundcloud.screen.main.MainActivity;
+import lsh.framgia.com.isoundcloud.data.repository.TrackRepository;
+import lsh.framgia.com.isoundcloud.data.source.local.TrackLocalDataSource;
+import lsh.framgia.com.isoundcloud.data.source.remote.TrackRemoteDataSource;
 import lsh.framgia.com.isoundcloud.screen.main.downloadedtrack.DownloadedTrackFragment;
 import lsh.framgia.com.isoundcloud.screen.main.downloadedtrack.DownloadedTrackPresenter;
 
@@ -67,7 +69,9 @@ public class LibraryFragment extends BaseFragment<LibraryContract.Presenter>
 
     private void goToDownloadedTracksScreen() {
         DownloadedTrackFragment fragment = DownloadedTrackFragment.newInstance();
-        DownloadedTrackPresenter presenter = new DownloadedTrackPresenter();
+        DownloadedTrackPresenter presenter = new DownloadedTrackPresenter(
+                TrackRepository.getInstance(TrackRemoteDataSource.getInstance(),
+                        TrackLocalDataSource.getInstance(getContext())));
         presenter.setView(fragment);
         replaceFragment(R.id.frame_container, fragment, true, null);
     }
