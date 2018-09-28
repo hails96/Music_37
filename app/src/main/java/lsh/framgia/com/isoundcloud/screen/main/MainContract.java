@@ -5,10 +5,10 @@ import lsh.framgia.com.isoundcloud.base.mvp.IView;
 
 public interface MainContract {
     interface View extends IView<Presenter> {
-
+        void onUpdateDownloadedTrackFailure(String msg);
     }
 
     interface Presenter extends IPresenter<View> {
-
+        void updateDownloadedTrack(long requestId);
     }
 }

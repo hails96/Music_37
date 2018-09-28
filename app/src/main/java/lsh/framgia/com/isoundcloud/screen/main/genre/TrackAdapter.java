@@ -1,7 +1,6 @@
 package lsh.framgia.com.isoundcloud.screen.main.genre;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -96,8 +95,8 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             RequestOptions options = new RequestOptions()
                     .centerCrop()
                     .circleCrop()
-                    .placeholder(R.drawable.ic_circle_place_holder)
-                    .error(R.drawable.ic_circle_place_holder);
+                    .placeholder(R.drawable.bg_track_place_holder)
+                    .error(R.drawable.bg_track_place_holder);
             Glide.with(context)
                     .load(track.getArtworkUrl())
                     .apply(options)

@@ -6,10 +6,16 @@ import lsh.framgia.com.isoundcloud.data.model.Track;
 
 public class BottomMenuDialogContract {
     interface View extends IView<Presenter> {
-        void setupTrack(Track track);
+        void showTrack(Track track);
+
+        void updateFavoriteSuccess(Boolean isFavorite);
     }
 
     interface Presenter extends IPresenter<View> {
+        void updateFavorite(Track track);
 
+        boolean checkDownloadedTrack(Track track);
+
+        void saveTrack(Track track);
     }
 }
