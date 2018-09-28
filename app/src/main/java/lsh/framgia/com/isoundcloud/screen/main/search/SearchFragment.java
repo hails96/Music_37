@@ -17,6 +17,9 @@ import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.base.EndlessScrollListener;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseFragment;
 import lsh.framgia.com.isoundcloud.data.model.Track;
+import lsh.framgia.com.isoundcloud.data.repository.TrackRepository;
+import lsh.framgia.com.isoundcloud.data.source.local.TrackLocalDataSource;
+import lsh.framgia.com.isoundcloud.data.source.remote.TrackRemoteDataSource;
 import lsh.framgia.com.isoundcloud.screen.main.MainActivity;
 import lsh.framgia.com.isoundcloud.screen.main.bottommenu.BottomMenuDialogFragment;
 import lsh.framgia.com.isoundcloud.screen.main.bottommenu.BottomMenuDialogPresenter;
@@ -82,7 +85,9 @@ public class SearchFragment extends BaseFragment<SearchContract.Presenter>
     @Override
     public void onMenuClick(Track track) {
         BottomMenuDialogFragment fragment = BottomMenuDialogFragment.newInstance();
-        BottomMenuDialogPresenter presenter = new BottomMenuDialogPresenter();
+        BottomMenuDialogPresenter presenter = new BottomMenuDialogPresenter(
+                TrackRepository.getInstance(TrackRemoteDataSource.getInstance(),
+                        TrackLocalDataSource.getInstance(getContext())));
         presenter
                 .setTrack(track)
                 .setView(fragment);

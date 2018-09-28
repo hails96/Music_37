@@ -32,6 +32,7 @@ import lsh.framgia.com.isoundcloud.screen.main.search.SearchFragment;
 import lsh.framgia.com.isoundcloud.screen.main.search.SearchPresenter;
 import lsh.framgia.com.isoundcloud.screen.player.PlayerActivity;
 import lsh.framgia.com.isoundcloud.service.OnMediaPlayerStatusListener;
+import lsh.framgia.com.isoundcloud.util.StringUtils;
 
 public class MainActivity extends BaseActivity<MainContract.Presenter> implements MainContract.View,
         OnMediaPlayerStatusListener, View.OnClickListener, OnToolbarChangeListener,
@@ -56,7 +57,8 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
 
     @Override
     protected void initLayout() {
-        setPresenter(new MainPresenter());
+        setPresenter(new MainPresenter(TrackRepository.getInstance(
+                TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance(this))));
         setupReferences();
         setupToolbar();
         setupListeners();
@@ -161,6 +163,20 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
     @Override
     public void onPlaylistChange(List<Track> playlist) {
         setPlaylist(playlist);
+    }
+
+    @Override
+    public void onUpdateDownloadedTrackFailure(String msg) {
+        if (!StringUtils.isEmpty(msg)) {
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void updateDownloadedTrack(long requestId) {
+        super.updateDownloadedTrack(requestId);
+        if (requestId == -1) return;
+        mPresenter.updateDownloadedTrack(requestId);
     }
 
     public void setPlaylist(List<Track> tracks) {
