@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -412,6 +413,9 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
 
     private void downloadTrack() {
         TrackDownloadManager.getInstance(this, this).downloadTrack(mTrack);
+        mTrack.setDownloadPath(StringUtils.formatFilePath(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath(),
+                mTrack.getTitle()));
         mPresenter.saveTrack(mTrack);
     }
 

@@ -1,7 +1,9 @@
 package lsh.framgia.com.isoundcloud.service;
 
+import android.Manifest;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.support.v4.app.ActivityCompat;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -81,7 +83,9 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
 
         try {
             setTrackState(TrackState.PREPARING);
-            mMediaPlayer.setDataSource(StringUtils.formatStreamUrl(track.getUri()));
+            String uri = !StringUtils.isEmpty(track.getDownloadPath()) ? track.getDownloadPath() :
+                    StringUtils.formatStreamUrl(track.getUri());
+            mMediaPlayer.setDataSource(uri);
             mMediaPlayer.prepareAsync();
             mCurrentTrackPosition = findCurrentTrackPosition(track);
             mMusicService.onNewTrackRequested(getCurrentTrack());

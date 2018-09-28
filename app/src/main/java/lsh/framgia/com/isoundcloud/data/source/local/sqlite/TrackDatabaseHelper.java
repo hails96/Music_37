@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Environment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +29,7 @@ public class TrackDatabaseHelper extends SQLiteOpenHelper {
                     TrackEntity.ARTIST + " TEXT, " +
                     TrackEntity.ARTWORK_URL + " TEXT, " +
                     TrackEntity.URI + " TEXT, " +
+                    TrackEntity.DOWNLOAD_PATH + " TEXT, " +
                     TrackEntity.DURATION + " INTEGER, " +
                     TrackEntity.IS_FAVORITE + " INTEGER, " +
                     TrackEntity.IS_DOWNLOADED + " INTERGER, " +
@@ -61,7 +61,18 @@ public class TrackDatabaseHelper extends SQLiteOpenHelper {
 
     public void saveTrack(Track track) {
         SQLiteDatabase database = getWritableDatabase();
-        database.insert(TrackEntity.TABLE_NAME, null, createValuesForTrack(track));
+        long result = database.insertWithOnConflict(TrackEntity.TABLE_NAME, null,
+                createValuesForTrack(track), SQLiteDatabase.CONFLICT_IGNORE);
+        if (result == -1) {
+            ContentValues values = new ContentValues();
+            values.put(TrackEntity.REQUEST_ID, track.getRequestId());
+            database.update(
+                    TrackEntity.TABLE_NAME,
+                    values,
+                    StringUtils.formatSingleWhereClause(TrackEntity.ID),
+                    new String[]{track.getId()}
+            );
+        }
     }
 
     public void updateDownloadedTrack(long requestId, OnLocalResponseListener listener) {
@@ -116,31 +127,21 @@ public class TrackDatabaseHelper extends SQLiteOpenHelper {
 
     public boolean updateFavoriteTrack(Track track, OnLocalResponseListener listener) {
         SQLiteDatabase database = getWritableDatabase();
-        track.setUri(StringUtils.formatFilePath(Environment.DIRECTORY_MUSIC, track.getTitle()));
-        long rowId = database.replace(TrackEntity.TABLE_NAME, null, createValuesForTrack(track));
-        if (rowId != -1) {
+        ContentValues values = new ContentValues();
+        values.put(TrackEntity.IS_FAVORITE, track.isFavorite());
+        int rowAffected = database.update(
+                TrackEntity.TABLE_NAME,
+                values,
+                StringUtils.formatSingleWhereClause(TrackEntity.ID),
+                new String[]{track.getId()});
+        if (rowAffected == 0) {
+            rowAffected = (int) database.insert(
+                    TrackEntity.TABLE_NAME, null, createValuesForTrack(track));
+        }
+        if (rowAffected >= 0) {
             listener.onSuccess(track.isFavorite());
         }
         return track.isFavorite();
-    }
-
-    private ContentValues createValuesForTrack(Track track) {
-        ContentValues values = new ContentValues();
-        values.put(TrackEntity.ID, track.getId());
-        values.put(TrackEntity.TITLE, track.getTitle());
-        values.put(TrackEntity.ARTIST, track.getArtist());
-        values.put(TrackEntity.ARTWORK_URL, track.getArtworkUrl());
-        values.put(TrackEntity.URI, track.getUri());
-        values.put(TrackEntity.DURATION, track.getDuration());
-        int isFavorite = track.isFavorite() ? 1 : 0;
-        values.put(TrackEntity.IS_FAVORITE, isFavorite);
-        int isDownloaded = track.isDownloaded() ? 1 : 0;
-        values.put(TrackEntity.IS_DOWNLOADED, isDownloaded);
-        int isDownloadable = track.isDownloadable() ? 1 : 0;
-        values.put(TrackEntity.IS_DOWNLOADABLE, isDownloadable);
-        values.put(TrackEntity.REQUEST_ID, track.getRequestId());
-        values.put(TrackEntity.DESCRIPTION, track.getDescription());
-        return values;
     }
 
     public void getDownloadedTracks(OnLocalResponseListener<List<Track>> listener) {
@@ -156,24 +157,50 @@ public class TrackDatabaseHelper extends SQLiteOpenHelper {
                 null
         );
         while (cursor.moveToNext()) {
-            Track track = new Track();
-            track.setId(cursor.getString(cursor.getColumnIndex(TrackEntity.ID)));
-            track.setTitle(cursor.getString(cursor.getColumnIndex(TrackEntity.TITLE)));
-            track.setArtist(cursor.getString(cursor.getColumnIndex(TrackEntity.ARTIST)));
-            track.setArtworkUrl(cursor.getString(cursor.getColumnIndex(TrackEntity.ARTWORK_URL)));
-            track.setUri(cursor.getString(cursor.getColumnIndex(TrackEntity.URI)));
-            track.setDuration(cursor.getInt(cursor.getColumnIndex(TrackEntity.DURATION)));
-            int tmp = cursor.getInt(cursor.getInt(cursor.getColumnIndex(TrackEntity.IS_FAVORITE)));
-            track.setIsFavorite(tmp == 1);
-            tmp = cursor.getInt(cursor.getInt(cursor.getColumnIndex(TrackEntity.IS_DOWNLOADED)));
-            track.setIsDownloaded(tmp == 1);
-            tmp = cursor.getInt(cursor.getInt(cursor.getColumnIndex(TrackEntity.IS_DOWNLOADABLE)));
-            track.setIsDownloadable(tmp == 1);
-            track.setRequestId(cursor.getInt(cursor.getColumnIndex(TrackEntity.REQUEST_ID)));
-            track.setDescription(cursor.getString(cursor.getColumnIndex(TrackEntity.DESCRIPTION)));
+            Track track = new Track(cursor);
             tracks.add(track);
         }
         cursor.close();
         listener.onSuccess(tracks);
+    }
+
+    public void getFavoriteTracks(OnLocalResponseListener<List<Track>> listener) {
+        SQLiteDatabase database = getReadableDatabase();
+        List<Track> tracks = new ArrayList<>();
+        Cursor cursor = database.query(
+                TrackEntity.TABLE_NAME,
+                null,
+                StringUtils.formatSingleWhereClause(TrackEntity.IS_FAVORITE),
+                new String[]{String.valueOf(1)},
+                null,
+                null,
+                null
+        );
+        while (cursor.moveToNext()) {
+            Track track = new Track(cursor);
+            tracks.add(track);
+        }
+        cursor.close();
+        listener.onSuccess(tracks);
+    }
+
+    private ContentValues createValuesForTrack(Track track) {
+        ContentValues values = new ContentValues();
+        values.put(TrackEntity.ID, track.getId());
+        values.put(TrackEntity.TITLE, track.getTitle());
+        values.put(TrackEntity.ARTIST, track.getArtist());
+        values.put(TrackEntity.ARTWORK_URL, track.getArtworkUrl());
+        values.put(TrackEntity.URI, track.getUri());
+        values.put(TrackEntity.DOWNLOAD_PATH, track.getDownloadPath());
+        values.put(TrackEntity.DURATION, track.getDuration());
+        int isFavorite = track.isFavorite() ? 1 : 0;
+        values.put(TrackEntity.IS_FAVORITE, isFavorite);
+        int isDownloaded = track.isDownloaded() ? 1 : 0;
+        values.put(TrackEntity.IS_DOWNLOADED, isDownloaded);
+        int isDownloadable = track.isDownloadable() ? 1 : 0;
+        values.put(TrackEntity.IS_DOWNLOADABLE, isDownloadable);
+        values.put(TrackEntity.REQUEST_ID, track.getRequestId());
+        values.put(TrackEntity.DESCRIPTION, track.getDescription());
+        return values;
     }
 }

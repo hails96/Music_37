@@ -54,4 +54,9 @@ public class TrackLocalDataSource implements TrackDataSource.LocalDataSource {
     public void getDownloadedTracks(OnLocalResponseListener<List<Track>> listener) {
         mTrackDatabaseHelper.getDownloadedTracks(listener);
     }
+
+    @Override
+    public void getFavoriteTracks(OnLocalResponseListener<List<Track>> listener) {
+        mTrackDatabaseHelper.getFavoriteTracks(listener);
+    }
 }
