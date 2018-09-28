@@ -1,5 +1,6 @@
 package lsh.framgia.com.isoundcloud.data.model;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -14,6 +15,7 @@ public class Track implements Parcelable {
     private String mArtist;
     private int mDuration;
     private String mUri;
+    private String mDownloadPath;
     private String mStreamUrl;
     private String mArtworkUrl;
     private boolean mIsDownloadable;
@@ -26,6 +28,24 @@ public class Track implements Parcelable {
 
     public Track() {
 
+    }
+
+    public Track(Cursor cursor) {
+        mId = (cursor.getString(cursor.getColumnIndex(TrackEntity.ID)));
+        mTitle = (cursor.getString(cursor.getColumnIndex(TrackEntity.TITLE)));
+        mArtist = (cursor.getString(cursor.getColumnIndex(TrackEntity.ARTIST)));
+        mArtworkUrl = (cursor.getString(cursor.getColumnIndex(TrackEntity.ARTWORK_URL)));
+        mUri = (cursor.getString(cursor.getColumnIndex(TrackEntity.URI)));
+        mDownloadPath = (cursor.getString(cursor.getColumnIndex(TrackEntity.DOWNLOAD_PATH)));
+        mDuration = (cursor.getInt(cursor.getColumnIndex(TrackEntity.DURATION)));
+        int tmp = cursor.getInt(cursor.getInt(cursor.getColumnIndex(TrackEntity.IS_FAVORITE)));
+        mIsFavorite = (tmp == 1);
+        tmp = cursor.getInt(cursor.getInt(cursor.getColumnIndex(TrackEntity.IS_DOWNLOADED)));
+        mIsDownloaded = (tmp == 1);
+        tmp = cursor.getInt(cursor.getInt(cursor.getColumnIndex(TrackEntity.IS_DOWNLOADABLE)));
+        mIsDownloadable = (tmp == 1);
+        mRequestId = (cursor.getInt(cursor.getColumnIndex(TrackEntity.REQUEST_ID)));
+        mDescription = (cursor.getString(cursor.getColumnIndex(TrackEntity.DESCRIPTION)));
     }
 
     public Track(JSONObject trackObject) {
@@ -49,6 +69,7 @@ public class Track implements Parcelable {
         mArtist = in.readString();
         mDuration = in.readInt();
         mUri = in.readString();
+        mDownloadPath = in.readString();
         mStreamUrl = in.readString();
         mArtworkUrl = in.readString();
         mIsDownloadable = in.readByte() != 0;
@@ -67,6 +88,7 @@ public class Track implements Parcelable {
         dest.writeString(mArtist);
         dest.writeInt(mDuration);
         dest.writeString(mUri);
+        dest.writeString(mDownloadPath);
         dest.writeString(mStreamUrl);
         dest.writeString(mArtworkUrl);
         dest.writeByte((byte) (mIsDownloadable ? 1 : 0));
@@ -187,6 +209,14 @@ public class Track implements Parcelable {
 
     public void setUri(String uri) {
         mUri = uri;
+    }
+
+    public String getDownloadPath() {
+        return mDownloadPath;
+    }
+
+    public void setDownloadPath(String downloadPath) {
+        mDownloadPath = downloadPath;
     }
 
     public boolean isFavorite() {

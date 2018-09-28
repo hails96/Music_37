@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -20,6 +21,7 @@ import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.data.source.remote.TrackDownloadManager;
 import lsh.framgia.com.isoundcloud.util.DialogUtils;
+import lsh.framgia.com.isoundcloud.util.StringUtils;
 
 public class BottomMenuDialogFragment extends BottomSheetDialogFragment
         implements BottomMenuDialogContract.View, View.OnClickListener,
@@ -172,6 +174,7 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
 
     private void downloadTrack() {
         TrackDownloadManager.getInstance(getContext(), this).downloadTrack(mTrack);
+        mTrack.setDownloadPath(StringUtils.formatFilePath(Environment.DIRECTORY_MUSIC, mTrack.getTitle()));
         mPresenter.saveTrack(mTrack);
     }
 

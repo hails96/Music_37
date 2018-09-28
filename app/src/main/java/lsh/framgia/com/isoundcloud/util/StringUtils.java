@@ -14,8 +14,7 @@ public class StringUtils {
     }
 
     public static String formatStreamUrl(String uri) {
-        return uri.contains(Constant.TEXT_HTTP) ? String.format
-                (Locale.ENGLISH, Constant.FORMAT_STREAM_URL, uri, BuildConfig.ApiKey) : uri;
+        return String.format(Locale.ENGLISH, Constant.FORMAT_STREAM_URL, uri, BuildConfig.ApiKey);
     }
 
     public static String formatSearchingTrackUrl(String query, int offset, int limit) {

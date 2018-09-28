@@ -18,6 +18,8 @@ public interface TrackDataSource {
         void updateFavoriteTrack(Track track, OnLocalResponseListener<Boolean> listener);
 
         void getDownloadedTracks(OnLocalResponseListener<List<Track>> listener);
+
+        void getFavoriteTracks(OnLocalResponseListener<List<Track>> listener);
     }
 
     interface RemoteDataSource {

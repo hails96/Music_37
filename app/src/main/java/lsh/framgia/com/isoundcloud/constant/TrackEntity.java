@@ -16,6 +16,7 @@ import android.support.annotation.StringDef;
         TrackEntity.ARTIST,
         TrackEntity.TITLE,
         TrackEntity.URI,
+        TrackEntity.DOWNLOAD_PATH,
         TrackEntity.IS_FAVORITE,
         TrackEntity.IS_DOWNLOADED,
         TrackEntity.REQUEST_ID
@@ -35,6 +36,7 @@ public @interface TrackEntity {
     String ARTIST = "artist";
     String TITLE = "title";
     String URI = "uri";
+    String DOWNLOAD_PATH = "download_path";
     String IS_FAVORITE = "is_favorite";
     String IS_DOWNLOADED = "is_downloaded";
     String REQUEST_ID = "request_id";

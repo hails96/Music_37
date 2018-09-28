@@ -67,4 +67,9 @@ public class TrackRepository implements TrackDataSource.LocalDataSource, TrackDa
     public void getDownloadedTracks(TrackDataSource.OnLocalResponseListener<List<Track>> listener) {
         mTrackLocalDataSource.getDownloadedTracks(listener);
     }
+
+    @Override
+    public void getFavoriteTracks(TrackDataSource.OnLocalResponseListener<List<Track>> listener) {
+        mTrackLocalDataSource.getFavoriteTracks(listener);
+    }
 }
