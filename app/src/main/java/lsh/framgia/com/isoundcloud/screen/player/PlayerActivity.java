@@ -35,7 +35,8 @@ import lsh.framgia.com.isoundcloud.util.StringUtils;
 
 public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         implements PlayerContract.View, OnMediaPlayerStatusListener, View.OnClickListener,
-        SeekBar.OnSeekBarChangeListener, TrackDownloadManager.OnDownloadListener {
+        SeekBar.OnSeekBarChangeListener, TrackDownloadManager.OnDownloadListener,
+        OnCurrentTrackChangeListener {
 
     public static final String EXTRA_TRACK = "lsh.framgia.com.isoundcloud.EXTRA_TRACK";
     private static final int DELAY_TIME = 1000;
@@ -63,6 +64,12 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     private RequestOptions mBackGroundOptions;
     private RequestOptions mArtworkOptions;
     private Track mTrack;
+    private OnCurrentTrackChangeListener mOnCurrentTrackChangeListener;
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_player;
+    }
 
     private Handler mHandler = new Handler();
     private Runnable mRunnable = new Runnable() {
@@ -76,11 +83,6 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
             mHandler.postDelayed(this, DELAY_TIME);
         }
     };
-
-    @Override
-    protected int getLayoutId() {
-        return R.layout.activity_player;
-    }
 
     @Override
     protected void initLayout() {
@@ -139,6 +141,9 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         mImagePlayPause.setImageResource(R.drawable.ic_pause);
         setupView(track);
         resetSeekBar(track);
+        if (mOnCurrentTrackChangeListener != null) {
+            mOnCurrentTrackChangeListener.onChanged(track);
+        }
     }
 
     @Override
@@ -276,6 +281,11 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         setupView(mTrack);
     }
 
+    @Override
+    public void onChanged(Track currentTrack) {
+        mMusicService.playTrack(currentTrack);
+    }
+
     public static Intent getPlayerIntent(Context context, Track track) {
         Intent intent = new Intent(context, PlayerActivity.class);
         intent.putExtra(EXTRA_TRACK, track);
@@ -380,7 +390,10 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     }
 
     private void openNowPlaying() {
-        NowPlayingFragment fragment = NowPlayingFragment.newInstance();
+        NowPlayingFragment fragment = NowPlayingFragment
+                .newInstance()
+                .setOnCurrentTrackChangeListener(this);
+        mOnCurrentTrackChangeListener = fragment;
         NowPlayingPresenter presenter = new NowPlayingPresenter();
         presenter
                 .setPlaylist(mMusicService.getPlaylist())

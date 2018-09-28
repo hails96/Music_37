@@ -4,6 +4,7 @@
     <color name="color_primary_dark">#881A5A</color>
     <color name="color_accent">#A61067</color>
     <color name="color_light_gray">#BDBDBD</color>
+    <color name="color_gray">#616161</color>
     <color name="color_black_maximum_opacity">#FF000000</color>
     <color name="color_black_minimum_opacity">#00000000</color>
 </resources>

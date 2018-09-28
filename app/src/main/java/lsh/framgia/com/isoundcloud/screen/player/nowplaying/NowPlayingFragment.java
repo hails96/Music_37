@@ -17,15 +17,17 @@ import java.util.List;
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.screen.main.genre.TrackAdapter;
+import lsh.framgia.com.isoundcloud.screen.player.OnCurrentTrackChangeListener;
 import lsh.framgia.com.isoundcloud.util.DialogUtils;
 
-public class NowPlayingFragment extends BottomSheetDialogFragment
-        implements NowPlayingContract.View, TrackAdapter.OnTrackItemClickListener {
+public class NowPlayingFragment extends BottomSheetDialogFragment implements NowPlayingContract.View,
+        TrackAdapter.OnTrackItemClickListener, OnCurrentTrackChangeListener {
 
     private NowPlayingContract.Presenter mPresenter;
 
     private RecyclerView mRecyclerNowPlaying;
     private TrackAdapter mTrackAdapter;
+    private OnCurrentTrackChangeListener mOnCurrentTrackChangeListener;
 
     public static NowPlayingFragment newInstance() {
         return new NowPlayingFragment();
@@ -84,7 +86,9 @@ public class NowPlayingFragment extends BottomSheetDialogFragment
 
     @Override
     public void onTrackClick(Track track) {
-
+        if (mOnCurrentTrackChangeListener != null) {
+            mOnCurrentTrackChangeListener.onChanged(track);
+        }
     }
 
     @Override
@@ -92,11 +96,21 @@ public class NowPlayingFragment extends BottomSheetDialogFragment
 
     }
 
+    public NowPlayingFragment setOnCurrentTrackChangeListener(OnCurrentTrackChangeListener listener) {
+        mOnCurrentTrackChangeListener = listener;
+        return this;
+    }
+
     private void setupRecyclerNowPlaying(View view) {
         mRecyclerNowPlaying = view.findViewById(R.id.recycler_now_playing);
         mRecyclerNowPlaying.setLayoutManager(new LinearLayoutManager(getContext()));
-        mTrackAdapter = new TrackAdapter(getContext(), new ArrayList<Track>());
+        mTrackAdapter = new NowPlayingAdapter(getContext(), new ArrayList<Track>());
         mTrackAdapter.setOnTrackItemClickListener(this);
         mRecyclerNowPlaying.setAdapter(mTrackAdapter);
+    }
+
+    @Override
+    public void onChanged(Track currentTrack) {
+        mTrackAdapter.setCurrentTrack(currentTrack);
     }
 }
