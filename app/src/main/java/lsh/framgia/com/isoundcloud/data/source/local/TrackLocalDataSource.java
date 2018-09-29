@@ -2,6 +2,7 @@ package lsh.framgia.com.isoundcloud.data.source.local;
 
 import android.content.Context;
 
+import java.io.File;
 import java.util.List;
 
 import lsh.framgia.com.isoundcloud.data.model.Track;
@@ -58,5 +59,18 @@ public class TrackLocalDataSource implements TrackDataSource.LocalDataSource {
     @Override
     public void getFavoriteTracks(OnLocalResponseListener<List<Track>> listener) {
         mTrackDatabaseHelper.getFavoriteTracks(listener);
+    }
+
+    @Override
+    public void deleteTrackFromDatabase(Track track, OnLocalResponseListener<Track> listener) {
+        mTrackDatabaseHelper.deleteTrack(track, listener);
+    }
+
+    @Override
+    public void deleteTrackFromStorage(Track track) {
+        File file = new File(track.getDownloadPath());
+        if (file.exists()) {
+            file.delete();
+        }
     }
 }

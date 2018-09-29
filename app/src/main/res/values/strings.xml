@@ -36,4 +36,6 @@
     <string name="text_favorite_tracks">Favorite tracks</string>
     <string name="text_playlist">Playlist</string>
     <string name="text_delete">Delete</string>
+    <string name="msg_delete_successfully">Delete successfully.</string>
+    <string name="msg_delete_failed">Failed to delete %s.</string>
 </resources>

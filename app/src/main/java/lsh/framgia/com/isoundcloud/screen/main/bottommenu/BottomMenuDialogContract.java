@@ -9,6 +9,14 @@ public class BottomMenuDialogContract {
         void showTrack(Track track);
 
         void updateFavoriteSuccess(Boolean isFavorite);
+
+        void enableDownloadAction();
+
+        void enableDeleteAction();
+
+        void deleteTrackSuccess(Track track);
+
+        void deleteTrackFailed(String msg);
     }
 
     interface Presenter extends IPresenter<View> {
@@ -17,5 +25,7 @@ public class BottomMenuDialogContract {
         boolean checkDownloadedTrack(Track track);
 
         void saveTrack(Track track);
+
+        void deleteTrackFromDatabase(Track track);
     }
 }

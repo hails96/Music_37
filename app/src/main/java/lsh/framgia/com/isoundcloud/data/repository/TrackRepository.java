@@ -72,4 +72,14 @@ public class TrackRepository implements TrackDataSource.LocalDataSource, TrackDa
     public void getFavoriteTracks(TrackDataSource.OnLocalResponseListener<List<Track>> listener) {
         mTrackLocalDataSource.getFavoriteTracks(listener);
     }
+
+    @Override
+    public void deleteTrackFromDatabase(Track track, TrackDataSource.OnLocalResponseListener<Track> listener) {
+        mTrackLocalDataSource.deleteTrackFromDatabase(track, listener);
+    }
+
+    @Override
+    public void deleteTrackFromStorage(Track track) {
+        mTrackLocalDataSource.deleteTrackFromStorage(track);
+    }
 }

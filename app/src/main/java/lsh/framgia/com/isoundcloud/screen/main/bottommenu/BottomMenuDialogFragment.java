@@ -35,9 +35,11 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
     private TextView mTextFavorite;
     private TextView mTextDownload;
     private TextView mTextPlaylist;
+    private TextView mTextDelete;
     private ImageView mImageFavorite;
     private ImageView mImageDownload;
     private ImageView mImagePlaylist;
+    private ImageView mImageDelete;
 
     private Track mTrack;
 
@@ -131,6 +133,10 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
             case R.id.image_playlist:
                 // TODO: handle add to playlist event
                 break;
+            case R.id.text_delete:
+            case R.id.image_delete:
+                handleDeleteTrack();
+                break;
             default:
                 break;
         }
@@ -153,6 +159,30 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
         }
     }
 
+    @Override
+    public void enableDownloadAction() {
+        mTextDownload.setVisibility(View.VISIBLE);
+        mImageDownload.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void enableDeleteAction() {
+        mTextDelete.setVisibility(View.VISIBLE);
+        mImageDelete.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void deleteTrackSuccess(Track track) {
+        dismiss();
+        Toast.makeText(getContext(), getString(R.string.msg_delete_successfully), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void deleteTrackFailed(String msg) {
+        dismiss();
+        Toast.makeText(getContext(), getString(R.string.msg_delete_failed, msg), Toast.LENGTH_SHORT).show();
+    }
+
     private void handleDownloadTrack() {
         if (!mPresenter.checkDownloadedTrack(mTrack)) {
             checkWriteStoragePermission();
@@ -164,7 +194,7 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
     private void checkWriteStoragePermission() {
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(),
+            requestPermissions(
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     WRITE_EXTERNAL_STORAGE_CODE);
         } else {
@@ -176,22 +206,25 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
         TrackDownloadManager.getInstance(getContext(), this).downloadTrack(mTrack);
         mTrack.setDownloadPath(StringUtils.formatFilePath(Environment.DIRECTORY_MUSIC, mTrack.getTitle()));
         mPresenter.saveTrack(mTrack);
-    }
-
-    private void handleFavoriteChange() {
-        if (mTrack == null) return;
-        mTrack.setIsFavorite(!mTrack.isFavorite());
-        mPresenter.updateFavorite(mTrack);
+        dismiss();
     }
 
     private void updateDownloadView(Track track) {
         if (track.isDownloadable()) {
             mImageDownload.setImageResource(R.drawable.ic_downloadable);
             mImageDownload.setClickable(true);
+            mTextDownload.setClickable(true);
         } else {
             mImageDownload.setImageResource(R.drawable.ic_not_downloadable);
             mImageDownload.setClickable(false);
+            mTextDownload.setClickable(false);
         }
+    }
+
+    private void handleFavoriteChange() {
+        if (mTrack == null) return;
+        mTrack.setIsFavorite(!mTrack.isFavorite());
+        mPresenter.updateFavorite(mTrack);
     }
 
     private void updateFavoriteView(Track track) {
@@ -204,13 +237,19 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
         }
     }
 
+    private void handleDeleteTrack() {
+        mPresenter.deleteTrackFromDatabase(mTrack);
+    }
+
     private void setupListeners() {
         mImageFavorite.setOnClickListener(this);
         mImageDownload.setOnClickListener(this);
         mImagePlaylist.setOnClickListener(this);
+        mImageDelete.setOnClickListener(this);
         mTextFavorite.setOnClickListener(this);
         mTextDownload.setOnClickListener(this);
         mTextPlaylist.setOnClickListener(this);
+        mTextDelete.setOnClickListener(this);
     }
 
     private void setupPreferences(View view) {
@@ -218,8 +257,10 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
         mImageFavorite = view.findViewById(R.id.image_favorite);
         mImageDownload = view.findViewById(R.id.image_download);
         mImagePlaylist = view.findViewById(R.id.image_playlist);
+        mImageDelete = view.findViewById(R.id.image_delete);
         mTextFavorite = view.findViewById(R.id.text_favorite);
         mTextDownload = view.findViewById(R.id.text_download);
         mTextPlaylist = view.findViewById(R.id.text_playlist);
+        mTextDelete = view.findViewById(R.id.text_delete);
     }
 }

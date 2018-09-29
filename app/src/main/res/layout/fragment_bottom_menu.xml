@@ -77,6 +77,7 @@
         android:layout_height="@dimen/dp_40"
         android:layout_margin="@dimen/dp_10"
         android:src="@drawable/ic_downloadable"
+        android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@id/text_download"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/image_playlist" />
@@ -87,8 +88,33 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_10"
         android:text="@string/label_download"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/image_download"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/image_download"
         app:layout_constraintTop_toTopOf="@id/image_download" />
+
+
+    <ImageView
+        android:id="@+id/image_delete"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="@dimen/dp_40"
+        android:layout_margin="@dimen/dp_10"
+        android:src="@drawable/ic_delete"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/text_delete"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_playlist" />
+
+    <TextView
+        android:id="@+id/text_delete"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_10"
+        android:text="@string/text_delete"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/image_delete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/image_delete"
+        app:layout_constraintTop_toTopOf="@id/image_delete" />
 </android.support.constraint.ConstraintLayout>
