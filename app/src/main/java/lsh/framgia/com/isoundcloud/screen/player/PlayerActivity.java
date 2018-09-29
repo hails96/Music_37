@@ -4,11 +4,13 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -45,7 +47,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
 
     private ImageView mImageBackground;
     private ImageView mImageArrowDown;
-    private ImageView mImageAlarmClock;
+    private ImageView mImageVolume;
     private ImageView mImageArtwork;
     private TextView mTextTrackTitle;
     private TextView mTextTrackArtist;
@@ -62,6 +64,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     private ImageView mImageNowPlaying;
     private ProgressBar mProgressBarLoading;
 
+    private AudioManager mAudioManager;
     private RequestOptions mBackGroundOptions;
     private RequestOptions mArtworkOptions;
     private Track mTrack;
@@ -96,6 +99,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         setupListener();
         setupOptions();
         setupView(mTrack);
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
     }
 
     @Override
@@ -212,6 +216,8 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
                 break;
             case R.id.image_now_playing:
                 openNowPlaying();
+            case R.id.image_volume:
+                handleVolumeChange();
             default:
                 break;
         }
@@ -299,19 +305,6 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         } else {
             mMusicService.resumePlayingMusic();
         }
-    }
-
-    private void setupListener() {
-        mImagePlayPause.setOnClickListener(this);
-        mImagePrevious.setOnClickListener(this);
-        mImageNext.setOnClickListener(this);
-        mImageLoop.setOnClickListener(this);
-        mImageShuffle.setOnClickListener(this);
-        mSeekBarDuration.setOnSeekBarChangeListener(this);
-        mImageArrowDown.setOnClickListener(this);
-        mImageDownload.setOnClickListener(this);
-        mImageFavorite.setOnClickListener(this);
-        mImageNowPlaying.setOnClickListener(this);
     }
 
     private void setupOptions() {
@@ -403,6 +396,33 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         fragment.show(getSupportFragmentManager(), NowPlayingFragment.class.getSimpleName());
     }
 
+    private void handleVolumeChange() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        SeekBar seekBar = new SeekBar(this);
+        seekBar.setMax(mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+        seekBar.setProgress(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+        builder
+                .setTitle(getString(R.string.text_adjust_volume))
+                .setView(seekBar);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        builder.create().show();
+    }
+
     private void handleDownloadTrack() {
         if (!mPresenter.checkDownloadedTrack(mTrack)) {
             checkWriteStoragePermission();
@@ -443,10 +463,24 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
                 .into(imageView);
     }
 
+    private void setupListener() {
+        mImagePlayPause.setOnClickListener(this);
+        mImagePrevious.setOnClickListener(this);
+        mImageNext.setOnClickListener(this);
+        mImageLoop.setOnClickListener(this);
+        mImageShuffle.setOnClickListener(this);
+        mSeekBarDuration.setOnSeekBarChangeListener(this);
+        mImageArrowDown.setOnClickListener(this);
+        mImageDownload.setOnClickListener(this);
+        mImageFavorite.setOnClickListener(this);
+        mImageNowPlaying.setOnClickListener(this);
+        mImageVolume.setOnClickListener(this);
+    }
+
     private void setupPreferences() {
         mImageBackground = findViewById(R.id.image_transparent);
         mImageArrowDown = findViewById(R.id.image_arrow_down);
-        mImageAlarmClock = findViewById(R.id.image_alarm_clock);
+        mImageVolume = findViewById(R.id.image_volume);
         mImageArtwork = findViewById(R.id.image_artwork);
         mTextTrackTitle = findViewById(R.id.text_track_title);
         mTextTrackArtist = findViewById(R.id.text_track_artist);
