@@ -27,11 +27,11 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/image_alarm_clock"
+        android:id="@+id/image_volume"
         android:layout_width="@dimen/dp_32"
         android:layout_height="@dimen/dp_32"
         android:layout_margin="@dimen/dp_10"
-        android:src="@drawable/ic_alarm_clock"
+        android:src="@drawable/ic_volume_level"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

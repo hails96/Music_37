@@ -38,4 +38,5 @@
     <string name="text_delete">Delete</string>
     <string name="msg_delete_successfully">Delete successfully.</string>
     <string name="msg_delete_failed">Failed to delete %s.</string>
+    <string name="text_adjust_volume">Adjust volume</string>
 </resources>
