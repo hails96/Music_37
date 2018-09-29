@@ -15,8 +15,10 @@ import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseFragment;
 import lsh.framgia.com.isoundcloud.data.model.Genre;
 import lsh.framgia.com.isoundcloud.data.model.Track;
+import lsh.framgia.com.isoundcloud.screen.main.MainActivity;
 import lsh.framgia.com.isoundcloud.screen.main.genre.GenreFragment;
 import lsh.framgia.com.isoundcloud.screen.main.genre.GenrePresenter;
+import lsh.framgia.com.isoundcloud.screen.player.PlayerActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,6 +36,7 @@ public class HomeFragment extends BaseFragment<HomeContract.Presenter> implement
     private RecyclerView mRecyclerGenre;
     private TextView mTextNoSong;
     private ImageView mImageNoSong;
+    private List<Track> mTracks;
 
     public static HomeFragment newInstance() {
         return new HomeFragment();
@@ -64,6 +67,7 @@ public class HomeFragment extends BaseFragment<HomeContract.Presenter> implement
             mImageNoSong.setVisibility(View.VISIBLE);
             mRecyclerRecentlyDownloaded.setVisibility(View.GONE);
         } else {
+            mTracks = tracks;
             mTextNoSong.setVisibility(View.INVISIBLE);
             mImageNoSong.setVisibility(View.INVISIBLE);
             mRecyclerRecentlyDownloaded.setVisibility(View.VISIBLE);
@@ -85,7 +89,8 @@ public class HomeFragment extends BaseFragment<HomeContract.Presenter> implement
 
     @Override
     public void onTrackClick(Track track) {
-
+        ((MainActivity) getActivity()).setPlaylist(mTracks);
+        getActivity().startActivity(PlayerActivity.getPlayerIntent(getContext(), track));
     }
 
     private void setupRecyclerRecentlyDownload() {

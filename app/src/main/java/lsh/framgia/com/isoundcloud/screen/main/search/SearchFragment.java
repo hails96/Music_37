@@ -5,9 +5,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -27,7 +30,8 @@ import lsh.framgia.com.isoundcloud.screen.main.genre.TrackAdapter;
 import lsh.framgia.com.isoundcloud.screen.player.PlayerActivity;
 
 public class SearchFragment extends BaseFragment<SearchContract.Presenter>
-        implements SearchContract.View, TrackAdapter.OnTrackItemClickListener {
+        implements SearchContract.View, TrackAdapter.OnTrackItemClickListener,
+        TextView.OnEditorActionListener {
 
     private static final int DELAY_SEARCH_TIME = 500;
 
@@ -94,6 +98,17 @@ public class SearchFragment extends BaseFragment<SearchContract.Presenter>
         fragment.show(getChildFragmentManager(), BottomMenuDialogFragment.class.getSimpleName());
     }
 
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+            hideKeyBoard(mEditTextSearch);
+            clearSearchQuery();
+            mPresenter.getSearchResult(mEditTextSearch.getText().toString());
+            return true;
+        }
+        return false;
+    }
+
     private void setupRecyclerTrack() {
         mRecyclerResult.setHasFixedSize(true);
         mRecyclerResult.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -129,6 +144,7 @@ public class SearchFragment extends BaseFragment<SearchContract.Presenter>
             }
         };
         mEditTextSearch.addTextChangedListener(textWatcher);
+        mEditTextSearch.setOnEditorActionListener(this);
         mHandler = new Handler();
         mRunnable = new Runnable() {
             @Override
