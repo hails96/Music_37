@@ -20,6 +20,8 @@ import lsh.framgia.com.isoundcloud.data.model.Track;
 public class RecentlyDownloadedAdapter extends RecyclerView.Adapter
         <RecentlyDownloadedAdapter.ViewHolder> {
 
+    private static final int MAXIMUM_ITEMS = 3;
+
     private Context mContext;
     private LayoutInflater mInflater;
     private List<Track> mTracks;
@@ -45,7 +47,9 @@ public class RecentlyDownloadedAdapter extends RecyclerView.Adapter
 
     @Override
     public int getItemCount() {
-        return mTracks == null ? 0 : mTracks.size();
+        if (mTracks == null) return 0;
+        if (mTracks.size() > MAXIMUM_ITEMS) return MAXIMUM_ITEMS;
+        return mTracks.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -62,7 +66,9 @@ public class RecentlyDownloadedAdapter extends RecyclerView.Adapter
         }
 
         private void bindData(Context context, final Track track, final OnTrackClickListener onTrackClickListener) {
-            RequestOptions options = new RequestOptions().centerCrop()
+            RequestOptions options = new RequestOptions()
+                    .centerCrop()
+                    .circleCrop()
                     .placeholder(R.drawable.ic_circle_place_holder)
                     .error(R.drawable.ic_circle_place_holder);
             Glide.with(context)

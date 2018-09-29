@@ -9,7 +9,8 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:descendantFocusability="blocksDescendants">
 
         <ImageView
             android:id="@+id/image_recently_downloaded_more"
@@ -34,13 +35,15 @@
             android:id="@+id/relative_recently_downloaded"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_10"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_recently_downloaded">
 
             <android.support.v7.widget.RecyclerView
+                android:visibility="gone"
                 android:id="@+id/recycler_recently_downloaded"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <ImageView
@@ -50,6 +53,7 @@
                 android:src="@drawable/ic_no_song_avaiable" />
 
             <TextView
+                android:id="@+id/text_no_song_avaiable"
                 android:layout_width="@dimen/dp_100"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/image_no_song_available"
@@ -61,9 +65,9 @@
             android:id="@+id/text_genre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_10"
             android:text="@string/label_genres"
             android:textColor="@android:color/black"
-            android:layout_marginTop="@dimen/dp_10"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/relative_recently_downloaded" />
 

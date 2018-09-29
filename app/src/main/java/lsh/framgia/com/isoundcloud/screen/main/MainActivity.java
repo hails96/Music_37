@@ -1,11 +1,9 @@
 package lsh.framgia.com.isoundcloud.screen.main;
 
-import android.Manifest;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -202,7 +200,8 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
 
     private void replaceHomeFragment() {
         HomeFragment homeFragment = HomeFragment.newInstance();
-        HomePresenter homePresenter = new HomePresenter();
+        HomePresenter homePresenter = new HomePresenter(TrackRepository.getInstance(
+                TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance(this)));
         homePresenter.setView(homeFragment);
         replaceFragment(R.id.frame_container, homeFragment, false, null);
         setToolbarTitle(getString(R.string.label_home));
