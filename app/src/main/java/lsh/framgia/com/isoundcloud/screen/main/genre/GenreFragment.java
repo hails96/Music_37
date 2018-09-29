@@ -115,11 +115,17 @@ public class GenreFragment extends BaseFragment<GenreContract.Presenter> impleme
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.floating_button_play:
-                // TODO: Play first track
+                playFirstTrack();
                 break;
             default:
                 break;
         }
+    }
+
+    private void playFirstTrack() {
+        ((MainActivity) getActivity()).setPlaylist(mTrackAdapter.getTracks());
+        getActivity().startActivity(PlayerActivity.getPlayerIntent(
+                getContext(), mTrackAdapter.getTracks().get(0)));
     }
 
     private void setupListeners() {
