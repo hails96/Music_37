@@ -25,4 +25,5 @@ public class Constant {
     public static final String TEXT_LARGE = "large";
     public static final String TEXT_ORIGINAL = "original";
     public static final String TEXT_NULL = "null";
+    public static final String TEXT_EMPTY = "";
 }

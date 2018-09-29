@@ -11,11 +11,15 @@ import java.util.List;
 
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseFragment;
+import lsh.framgia.com.isoundcloud.constant.MenuType;
 import lsh.framgia.com.isoundcloud.data.model.Track;
+import lsh.framgia.com.isoundcloud.data.repository.TrackRepository;
+import lsh.framgia.com.isoundcloud.data.source.local.TrackLocalDataSource;
+import lsh.framgia.com.isoundcloud.data.source.remote.TrackRemoteDataSource;
 import lsh.framgia.com.isoundcloud.screen.main.OnPlaylistChangeListener;
 import lsh.framgia.com.isoundcloud.screen.main.OnToolbarChangeListener;
-import lsh.framgia.com.isoundcloud.screen.main.bottomdownloaded.BottomDownloadedDialogFragment;
-import lsh.framgia.com.isoundcloud.screen.main.bottomdownloaded.BottomDownloadedDialogPresenter;
+import lsh.framgia.com.isoundcloud.screen.main.bottommenu.BottomMenuDialogFragment;
+import lsh.framgia.com.isoundcloud.screen.main.bottommenu.BottomMenuDialogPresenter;
 import lsh.framgia.com.isoundcloud.screen.main.genre.TrackAdapter;
 import lsh.framgia.com.isoundcloud.screen.player.PlayerActivity;
 
@@ -73,12 +77,14 @@ public class FavoriteFragment extends BaseFragment<FavoriteContract.Presenter>
 
     @Override
     public void onMenuClick(Track track) {
-        BottomDownloadedDialogFragment fragment = BottomDownloadedDialogFragment.newInstance();
-        BottomDownloadedDialogPresenter presenter = new BottomDownloadedDialogPresenter();
+        BottomMenuDialogFragment fragment = BottomMenuDialogFragment.newInstance();
+        BottomMenuDialogPresenter presenter = new BottomMenuDialogPresenter(TrackRepository.getInstance(
+                TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance(getContext())));
         presenter
                 .setTrack(track)
+                .setMenuType(MenuType.DOWNLOAD)
                 .setView(fragment);
-        fragment.show(getChildFragmentManager(), BottomDownloadedDialogFragment.class.getSimpleName());
+        fragment.show(getChildFragmentManager(), BottomMenuDialogFragment.class.getSimpleName());
     }
 
     @Override

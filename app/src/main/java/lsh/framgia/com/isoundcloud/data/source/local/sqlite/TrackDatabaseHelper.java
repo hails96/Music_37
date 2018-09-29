@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lsh.framgia.com.isoundcloud.R;
+import lsh.framgia.com.isoundcloud.constant.Constant;
 import lsh.framgia.com.isoundcloud.constant.TrackEntity;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.data.source.TrackDataSource.OnLocalResponseListener;
@@ -182,6 +183,24 @@ public class TrackDatabaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         listener.onSuccess(tracks);
+    }
+
+    public void deleteTrack(Track track, OnLocalResponseListener<Track> listener) {
+        SQLiteDatabase database = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(TrackEntity.IS_DOWNLOADED, 0);
+        values.put(TrackEntity.DOWNLOAD_PATH, Constant.TEXT_EMPTY);
+        int result = database.update(
+                TrackEntity.TABLE_NAME,
+                values,
+                StringUtils.formatSingleWhereClause(TrackEntity.ID),
+                new String[]{track.getId()}
+        );
+        if (result > 0) {
+            listener.onSuccess(track);
+        } else {
+            listener.onFailure(track.getTitle());
+        }
     }
 
     private ContentValues createValuesForTrack(Track track) {

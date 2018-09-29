@@ -20,6 +20,10 @@ public interface TrackDataSource {
         void getDownloadedTracks(OnLocalResponseListener<List<Track>> listener);
 
         void getFavoriteTracks(OnLocalResponseListener<List<Track>> listener);
+
+        void deleteTrackFromDatabase(Track track, OnLocalResponseListener<Track> listener);
+
+        void deleteTrackFromStorage(Track track);
     }
 
     interface RemoteDataSource {

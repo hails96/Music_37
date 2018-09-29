@@ -11,11 +11,16 @@ import java.util.List;
 
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseFragment;
+import lsh.framgia.com.isoundcloud.constant.MenuType;
 import lsh.framgia.com.isoundcloud.data.model.Track;
+import lsh.framgia.com.isoundcloud.data.repository.TrackRepository;
+import lsh.framgia.com.isoundcloud.data.source.local.TrackLocalDataSource;
+import lsh.framgia.com.isoundcloud.data.source.remote.TrackRemoteDataSource;
 import lsh.framgia.com.isoundcloud.screen.main.OnPlaylistChangeListener;
 import lsh.framgia.com.isoundcloud.screen.main.OnToolbarChangeListener;
-import lsh.framgia.com.isoundcloud.screen.main.bottomdownloaded.BottomDownloadedDialogFragment;
-import lsh.framgia.com.isoundcloud.screen.main.bottomdownloaded.BottomDownloadedDialogPresenter;
+import lsh.framgia.com.isoundcloud.screen.main.bottommenu.BottomMenuDialogFragment;
+import lsh.framgia.com.isoundcloud.screen.main.bottommenu.BottomMenuDialogPresenter;
+import lsh.framgia.com.isoundcloud.screen.main.bottommenu.OnDeleteListener;
 import lsh.framgia.com.isoundcloud.screen.main.genre.TrackAdapter;
 import lsh.framgia.com.isoundcloud.screen.player.PlayerActivity;
 
@@ -23,7 +28,7 @@ import lsh.framgia.com.isoundcloud.screen.player.PlayerActivity;
  * A simple {@link Fragment} subclass.
  */
 public class DownloadedTrackFragment extends BaseFragment<DownloadedTrackContract.Presenter>
-        implements DownloadedTrackContract.View, TrackAdapter.OnTrackItemClickListener {
+        implements DownloadedTrackContract.View, TrackAdapter.OnTrackItemClickListener, OnDeleteListener {
 
     private RecyclerView mRecyclerDownloaded;
     private TrackAdapter mTrackAdapter;
@@ -67,18 +72,27 @@ public class DownloadedTrackFragment extends BaseFragment<DownloadedTrackContrac
 
     @Override
     public void onMenuClick(Track track) {
-        BottomDownloadedDialogFragment fragment = BottomDownloadedDialogFragment.newInstance();
-        BottomDownloadedDialogPresenter presenter = new BottomDownloadedDialogPresenter();
+        BottomMenuDialogFragment fragment = BottomMenuDialogFragment.newInstance();
+        BottomMenuDialogPresenter presenter = new BottomMenuDialogPresenter(TrackRepository.getInstance(
+                TrackRemoteDataSource.getInstance(), TrackLocalDataSource.getInstance(getContext())));
         presenter
                 .setTrack(track)
+                .setMenuType(MenuType.DELETE)
+                .setOnDeleteListener(this)
                 .setView(fragment);
-        fragment.show(getChildFragmentManager(), BottomDownloadedDialogFragment.class.getSimpleName());
+        fragment.show(getChildFragmentManager(), BottomMenuDialogFragment.class.getSimpleName());
     }
 
     @Override
     public void getDownloadedTracksSuccess(List<Track> tracks) {
-        if (tracks == null) return;
+        mTrackAdapter.getTracks().clear();
         mTrackAdapter.addAll(tracks);
+        mTrackAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onTrackDeleted() {
+        mPresenter.getDownloadedTracks();
     }
 
     @Override

@@ -18,6 +18,7 @@ import java.util.List;
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.base.EndlessScrollListener;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseFragment;
+import lsh.framgia.com.isoundcloud.constant.MenuType;
 import lsh.framgia.com.isoundcloud.data.model.Genre;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.data.repository.TrackRepository;
@@ -107,6 +108,7 @@ public class GenreFragment extends BaseFragment<GenreContract.Presenter> impleme
                         TrackLocalDataSource.getInstance(getContext())));
         presenter
                 .setTrack(track)
+                .setMenuType(MenuType.DOWNLOAD)
                 .setView(fragment);
         fragment.show(getChildFragmentManager(), BottomMenuDialogFragment.class.getSimpleName());
     }
