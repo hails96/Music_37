@@ -1,6 +1,11 @@
 package lsh.framgia.com.isoundcloud.screen.main.bottommenu;
 
+import android.util.Log;
+
+import java.util.List;
+
 import lsh.framgia.com.isoundcloud.constant.MenuType;
+import lsh.framgia.com.isoundcloud.data.model.Playlist;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.data.repository.TrackRepository;
 import lsh.framgia.com.isoundcloud.data.source.TrackDataSource;
@@ -26,7 +31,7 @@ public class BottomMenuDialogPresenter implements BottomMenuDialogContract.Prese
     @Override
     public void start() {
         if (mTrack != null) {
-            mTrack.setIsFavorite(checkFavoriteTrack(mTrack));
+            mTrack.setIsFavorite(mTrackRepository.isFavoriteTrack(mTrack));
             mView.showTrack(mTrack);
         }
         if (mMenuType == MenuType.DOWNLOAD) {
@@ -34,6 +39,7 @@ public class BottomMenuDialogPresenter implements BottomMenuDialogContract.Prese
         } else {
             mView.enableDeleteAction();
         }
+        getPlaylists();
     }
 
     @Override
@@ -80,6 +86,38 @@ public class BottomMenuDialogPresenter implements BottomMenuDialogContract.Prese
         });
     }
 
+    @Override
+    public void addTrackToNewPlaylist(Track track, String playlistName) {
+        Playlist playlist = new Playlist();
+        playlist.setName(playlistName);
+        playlist.setCreatedDate(System.currentTimeMillis());
+        mTrackRepository.addTrackToNewPlaylist(track, playlist, new TrackDataSource.OnLocalResponseListener<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                Log.d("BottomMenu", "onSuccess: " + result);
+            }
+
+            @Override
+            public void onFailure(String msg) {
+                Log.d("BottomMenu", "onFailure: " + msg);
+            }
+        });
+    }
+
+    private void getPlaylists() {
+        mTrackRepository.getPlaylists(new TrackDataSource.OnLocalResponseListener<List<Playlist>>() {
+            @Override
+            public void onSuccess(List<Playlist> result) {
+                mView.getPlaylistsSuccess(result);
+            }
+
+            @Override
+            public void onFailure(String msg) {
+
+            }
+        });
+    }
+
     public BottomMenuDialogPresenter setTrack(Track track) {
         mTrack = track;
         return this;
@@ -93,9 +131,5 @@ public class BottomMenuDialogPresenter implements BottomMenuDialogContract.Prese
     public BottomMenuDialogPresenter setOnDeleteListener(OnDeleteListener listener) {
         mOnDeleteListener = listener;
         return this;
-    }
-
-    private boolean checkFavoriteTrack(Track track) {
-        return mTrackRepository.isFavoriteTrack(track);
     }
 }

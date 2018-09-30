@@ -14,14 +14,19 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lsh.framgia.com.isoundcloud.MusicApplication;
 import lsh.framgia.com.isoundcloud.R;
+import lsh.framgia.com.isoundcloud.data.model.Playlist;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.data.source.remote.TrackDownloadManager;
 import lsh.framgia.com.isoundcloud.util.DialogUtils;
@@ -46,6 +51,7 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
     private ImageView mImageDelete;
 
     private Track mTrack;
+    private List<Playlist> mPlaylists;
 
     public static BottomMenuDialogFragment newInstance() {
         return new BottomMenuDialogFragment();
@@ -187,20 +193,31 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
         Toast.makeText(getContext(), getString(R.string.msg_delete_failed, msg), Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void getPlaylistsSuccess(List<Playlist> playlists) {
+        mPlaylists = playlists;
+    }
+
     private void handleAddToPlaylist() {
         dismiss();
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_to_playlist, null);
+        Spinner spinnerPlaylist = dialogView.findViewById(R.id.spinner_existed_playlist);
+        if (spinnerPlaylist != null) {
+            List<String> names = getPlaylistNames();
+            spinnerPlaylist.setAdapter(new ArrayAdapter<>(MusicApplication.getAppContext(),
+                    android.R.layout.simple_spinner_dropdown_item, names));
+        }
         builder
                 .setTitle(getString(R.string.label_add_to_playlist))
                 .setIcon(R.drawable.ic_playlist_add)
-                .setView(R.layout.dialog_add_to_playlist)
+                .setView(dialogView)
                 .setPositiveButton(R.string.text_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         EditText editNewPlaylist = ((AlertDialog) dialog).findViewById(R.id.edit_playlist);
-                        Spinner spinnerPlaylist = ((AlertDialog) dialog).findViewById(R.id.spinner_existed_playlist);
-                        if (!StringUtils.isEmpty(editNewPlaylist.getText().toString())) {
-                            // TODO: create new playlist and add this track to it
+                        if (editNewPlaylist != null && !StringUtils.isEmpty(editNewPlaylist.getText().toString())) {
+                            mPresenter.addTrackToNewPlaylist(mTrack, editNewPlaylist.getText().toString());
                         } else {
                             // TODO: add this track to an existing playlist
                         }
@@ -213,6 +230,15 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
                     }
                 });
         builder.create().show();
+    }
+
+    private List<String> getPlaylistNames() {
+        List<String> result = new ArrayList<>();
+        if (mPlaylists == null || mPlaylists.isEmpty()) return result;
+        for (Playlist playlist : mPlaylists) {
+            result.add(playlist.getName());
+        }
+        return result;
     }
 
     private void handleDownloadTrack() {

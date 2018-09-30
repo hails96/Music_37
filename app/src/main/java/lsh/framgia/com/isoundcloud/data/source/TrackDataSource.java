@@ -29,6 +29,8 @@ public interface TrackDataSource {
         void createNewPlaylist(Playlist playlist, OnLocalResponseListener<Boolean> listener);
 
         void getPlaylists(OnLocalResponseListener<List<Playlist>> listener);
+
+        void addTrackToNewPlaylist(Track track, Playlist playlist, OnLocalResponseListener<Boolean> listener);
     }
 
     interface RemoteDataSource {

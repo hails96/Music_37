@@ -1,7 +1,10 @@
 package lsh.framgia.com.isoundcloud.screen.main.bottommenu;
 
+import java.util.List;
+
 import lsh.framgia.com.isoundcloud.base.mvp.IPresenter;
 import lsh.framgia.com.isoundcloud.base.mvp.IView;
+import lsh.framgia.com.isoundcloud.data.model.Playlist;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 
 public class BottomMenuDialogContract {
@@ -17,6 +20,8 @@ public class BottomMenuDialogContract {
         void deleteTrackSuccess(Track track);
 
         void deleteTrackFailed(String msg);
+
+        void getPlaylistsSuccess(List<Playlist> playlists);
     }
 
     interface Presenter extends IPresenter<View> {
@@ -27,5 +32,7 @@ public class BottomMenuDialogContract {
         void saveTrack(Track track);
 
         void deleteTrackFromDatabase(Track track);
+
+        void addTrackToNewPlaylist(Track track, String playlistName);
     }
 }
