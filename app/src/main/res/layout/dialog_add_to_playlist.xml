@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/dp_10"
+    android:paddingTop="@dimen/dp_10">
+
+    <TextView
+        android:id="@+id/text_create_new"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:layout_marginStart="?dialogPreferredPadding"
+        android:layout_marginTop="@dimen/dp_10"
+        android:text="@string/text_create_playlist"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/edit_playlist"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="?dialogPreferredPadding"
+        android:layout_marginStart="@dimen/dp_10"
+        android:background="@drawable/bg_round_corner"
+        android:maxLines="1"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="@id/text_create_new"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toTopOf="@id/text_create_new" />
+
+    <TextView
+        android:id="@+id/text_existed_playlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:layout_marginStart="?dialogPreferredPadding"
+        android:layout_marginTop="@dimen/dp_20"
+        android:text="@string/text_existing_playlist"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_create_new" />
+
+    <Spinner
+        android:id="@+id/spinner_existed_playlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="?dialogPreferredPadding"
+        android:layout_marginStart="@dimen/dp_10"
+        app:layout_constraintBottom_toBottomOf="@id/text_existed_playlist"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toTopOf="@id/text_existed_playlist" />
+
+    <android.support.constraint.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="text_existed_playlist,text_create_new" />
+</android.support.constraint.ConstraintLayout>
