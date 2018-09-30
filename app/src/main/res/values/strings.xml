@@ -39,4 +39,8 @@
     <string name="msg_delete_successfully">Delete successfully.</string>
     <string name="msg_delete_failed">Failed to delete %s.</string>
     <string name="text_adjust_volume">Adjust volume</string>
+    <string name="text_create_playlist">Create playlist:</string>
+    <string name="text_existing_playlist">Existing playlist:</string>
+    <string name="text_ok">OK</string>
+    <string name="text_cancel">Cancel</string>
 </resources>

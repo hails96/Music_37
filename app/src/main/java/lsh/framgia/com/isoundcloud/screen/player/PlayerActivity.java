@@ -216,8 +216,10 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
                 break;
             case R.id.image_now_playing:
                 openNowPlaying();
+                break;
             case R.id.image_volume:
                 handleVolumeChange();
+                break;
             default:
                 break;
         }
@@ -399,10 +401,12 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     private void handleVolumeChange() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         SeekBar seekBar = new SeekBar(this);
+        seekBar.setPadding(50, 20, 50, 20);
         seekBar.setMax(mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
         seekBar.setProgress(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
         builder
                 .setTitle(getString(R.string.text_adjust_volume))
+                .setIcon(R.drawable.ic_volume_level)
                 .setView(seekBar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override

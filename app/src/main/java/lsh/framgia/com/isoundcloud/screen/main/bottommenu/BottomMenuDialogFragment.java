@@ -2,21 +2,25 @@ package lsh.framgia.com.isoundcloud.screen.main.bottommenu;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import lsh.framgia.com.isoundcloud.MusicApplication;
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.data.source.remote.TrackDownloadManager;
@@ -131,7 +135,7 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
                 break;
             case R.id.text_playlist:
             case R.id.image_playlist:
-                // TODO: handle add to playlist event
+                handleAddToPlaylist();
                 break;
             case R.id.text_delete:
             case R.id.image_delete:
@@ -181,6 +185,34 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
     public void deleteTrackFailed(String msg) {
         dismiss();
         Toast.makeText(getContext(), getString(R.string.msg_delete_failed, msg), Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleAddToPlaylist() {
+        dismiss();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder
+                .setTitle(getString(R.string.label_add_to_playlist))
+                .setIcon(R.drawable.ic_playlist_add)
+                .setView(R.layout.dialog_add_to_playlist)
+                .setPositiveButton(R.string.text_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText editNewPlaylist = ((AlertDialog) dialog).findViewById(R.id.edit_playlist);
+                        Spinner spinnerPlaylist = ((AlertDialog) dialog).findViewById(R.id.spinner_existed_playlist);
+                        if (!StringUtils.isEmpty(editNewPlaylist.getText().toString())) {
+                            // TODO: create new playlist and add this track to it
+                        } else {
+                            // TODO: add this track to an existing playlist
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.text_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dismiss();
+                    }
+                });
+        builder.create().show();
     }
 
     private void handleDownloadTrack() {
