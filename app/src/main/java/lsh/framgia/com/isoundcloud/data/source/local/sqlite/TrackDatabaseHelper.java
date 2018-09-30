@@ -317,6 +317,47 @@ public class TrackDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public void getTracksFromPlaylist(Playlist playlist, OnLocalResponseListener<List<Track>> listener) {
+        SQLiteDatabase database = getReadableDatabase();
+        List<Track> tracks = new ArrayList<>();
+        Cursor cursor = database.query(
+                TrackPlaylistEntity.TABLE_NAME,
+                null,
+                StringUtils.formatSingleWhereClause(TrackPlaylistEntity.PLAYLIST_ID),
+                new String[]{String.valueOf(playlist.getId())},
+                null,
+                null,
+                null
+        );
+        while (cursor.moveToNext()) {
+            Track track = getTrackFromId(cursor.getString(cursor.getColumnIndex(TrackPlaylistEntity.TRACK_ID)));
+            if (track != null) tracks.add(track);
+        }
+        cursor.close();
+        if (tracks.size() > 0) {
+            listener.onSuccess(tracks);
+        }
+    }
+
+    private Track getTrackFromId(String id) {
+        SQLiteDatabase database = getReadableDatabase();
+        Track track = null;
+        Cursor cursor = database.query(
+                TrackEntity.TABLE_NAME,
+                null,
+                StringUtils.formatSingleWhereClause(TrackEntity.ID),
+                new String[]{id},
+                null,
+                null,
+                null
+        );
+        if (cursor.moveToNext()) {
+            track = new Track(cursor);
+        }
+        cursor.close();
+        return track;
+    }
+
     private boolean isTrackExisted(Track track) {
         SQLiteDatabase database = getReadableDatabase();
         Cursor cursor = database.query(
@@ -347,5 +388,17 @@ public class TrackDatabaseHelper extends SQLiteOpenHelper {
         boolean isExisted = cursor.moveToNext();
         cursor.close();
         return isExisted;
+    }
+
+    public void addNumberOfPlays(Playlist playlist) {
+        SQLiteDatabase database = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(PlaylistEntity.NUMBER_OF_PLAYS, playlist.getNumberOfPlays() + 1);
+        database.update(
+                PlaylistEntity.TABLE_NAME,
+                values,
+                StringUtils.formatSingleWhereClause(PlaylistEntity.ID),
+                new String[]{String.valueOf(playlist.getId())}
+        );
     }
 }

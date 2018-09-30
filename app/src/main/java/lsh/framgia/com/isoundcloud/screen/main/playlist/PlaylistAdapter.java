@@ -20,11 +20,13 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
     private Context mContext;
     private LayoutInflater mInflater;
     private List<Playlist> mPlaylists;
+    private OnPlaylistClickListener mOnPlaylistClickListener;
 
-    public PlaylistAdapter(Context context, List<Playlist> playlists) {
+    public PlaylistAdapter(Context context, List<Playlist> playlists, OnPlaylistClickListener listener) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
         mPlaylists = playlists;
+        mOnPlaylistClickListener = listener;
     }
 
     @NonNull
@@ -35,7 +37,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bindData(mPlaylists.get(position));
+        holder.bindData(mPlaylists.get(position), mOnPlaylistClickListener);
     }
 
     @Override
@@ -56,11 +58,19 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
             mNumberOfPlays = itemView.findViewById(R.id.text_playlist_number_of_plays);
         }
 
-        void bindData(Playlist playlist) {
+        void bindData(final Playlist playlist, final OnPlaylistClickListener listener) {
             mTextName.setText(playlist.getName());
             mCreatedDate.setText(StringUtils.formatMillisToDate(
                     playlist.getCreatedDate(), Constant.FORMAT_DATE));
             mNumberOfPlays.setText(String.valueOf(playlist.getNumberOfPlays()));
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (listener != null) {
+                        listener.onPlaylistClick(playlist);
+                    }
+                }
+            });
         }
     }
 }
