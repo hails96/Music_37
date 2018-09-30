@@ -14,6 +14,8 @@ import lsh.framgia.com.isoundcloud.screen.main.downloadedtrack.DownloadedTrackFr
 import lsh.framgia.com.isoundcloud.screen.main.downloadedtrack.DownloadedTrackPresenter;
 import lsh.framgia.com.isoundcloud.screen.main.favorite.FavoriteFragment;
 import lsh.framgia.com.isoundcloud.screen.main.favorite.FavoritePresenter;
+import lsh.framgia.com.isoundcloud.screen.main.playlist.PlaylistFragment;
+import lsh.framgia.com.isoundcloud.screen.main.playlist.PlaylistPresenter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,11 +64,20 @@ public class LibraryFragment extends BaseFragment<LibraryContract.Presenter>
                 goToFavoriteScreen();
                 break;
             case R.id.card_view_playlist:
-                // TODO: open playlist screen
+                goToPlaylistScreen();
                 break;
             default:
                 break;
         }
+    }
+
+    private void goToPlaylistScreen() {
+        PlaylistFragment fragment = PlaylistFragment.newInstance();
+        PlaylistPresenter presenter = new PlaylistPresenter(
+                TrackRepository.getInstance(TrackRemoteDataSource.getInstance(),
+                        TrackLocalDataSource.getInstance(getContext())));
+        presenter.setView(fragment);
+        replaceFragment(R.id.frame_container, fragment, true, null);
     }
 
     private void goToFavoriteScreen() {

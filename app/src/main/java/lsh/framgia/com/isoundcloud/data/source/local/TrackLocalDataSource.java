@@ -5,6 +5,7 @@ import android.content.Context;
 import java.io.File;
 import java.util.List;
 
+import lsh.framgia.com.isoundcloud.data.model.Playlist;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.data.source.TrackDataSource;
 import lsh.framgia.com.isoundcloud.data.source.TrackDataSource.OnLocalResponseListener;
@@ -72,5 +73,20 @@ public class TrackLocalDataSource implements TrackDataSource.LocalDataSource {
         if (file.exists()) {
             file.delete();
         }
+    }
+
+    @Override
+    public void createNewPlaylist(Playlist playlist, OnLocalResponseListener<Boolean> listener) {
+        mTrackDatabaseHelper.createNewPlaylist(playlist, listener);
+    }
+
+    @Override
+    public void getPlaylists(OnLocalResponseListener<List<Playlist>> listener) {
+        mTrackDatabaseHelper.getPlaylists(listener);
+    }
+
+    @Override
+    public void addTrackToNewPlaylist(Track track, Playlist playlist, OnLocalResponseListener<Boolean> listener) {
+        mTrackDatabaseHelper.addTrackToNewPlaylist(track, playlist, listener);
     }
 }

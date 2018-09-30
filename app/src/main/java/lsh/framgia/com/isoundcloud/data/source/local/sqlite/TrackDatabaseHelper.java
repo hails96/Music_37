@@ -11,7 +11,10 @@ import java.util.List;
 
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.constant.Constant;
+import lsh.framgia.com.isoundcloud.constant.PlaylistEntity;
 import lsh.framgia.com.isoundcloud.constant.TrackEntity;
+import lsh.framgia.com.isoundcloud.constant.TrackPlaylistEntity;
+import lsh.framgia.com.isoundcloud.data.model.Playlist;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.data.source.TrackDataSource.OnLocalResponseListener;
 import lsh.framgia.com.isoundcloud.util.StringUtils;
@@ -38,6 +41,22 @@ public class TrackDatabaseHelper extends SQLiteOpenHelper {
                     TrackEntity.REQUEST_ID + " INTEGER, " +
                     TrackEntity.DESCRIPTION + " TEXT);";
 
+    private static final String SQL_CREATE_PLAYLIST_TABLE =
+            "CREATE TABLE " + PlaylistEntity.TABLE_NAME + "(" +
+                    PlaylistEntity.ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    PlaylistEntity.NAME + " TEXT, " +
+                    PlaylistEntity.CREATED_DATE + " INTEGER, " +
+                    PlaylistEntity.NUMBER_OF_PLAYS + " INTEGER);";
+
+    private static final String SQL_CREATE_TRACK_PLAYLIST_TABLE =
+            "CREATE TABLE " + TrackPlaylistEntity.TABLE_NAME + "(" +
+                    TrackPlaylistEntity.TRACK_ID + " TEXT, " +
+                    TrackPlaylistEntity.PLAYLIST_ID + " INTEGER, " +
+                    "FOREIGN KEY (" + TrackPlaylistEntity.TRACK_ID + ") REFERENCES " +
+                    TrackEntity.TABLE_NAME + "(" + TrackEntity.ID + "), " +
+                    "FOREIGN KEY (" + TrackPlaylistEntity.PLAYLIST_ID + ") REFERENCES " +
+                    PlaylistEntity.TABLE_NAME + "(" + PlaylistEntity.ID + "));";
+
     public static TrackDatabaseHelper getInstance(Context context) {
         if (sInstance == null) {
             sInstance = new TrackDatabaseHelper(context);
@@ -53,6 +72,8 @@ public class TrackDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_TRACK_TABLE);
+        db.execSQL(SQL_CREATE_PLAYLIST_TABLE);
+        db.execSQL(SQL_CREATE_TRACK_PLAYLIST_TABLE);
     }
 
     @Override
@@ -203,6 +224,46 @@ public class TrackDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public long createNewPlaylist(Playlist playlist, OnLocalResponseListener<Boolean> listener) {
+        SQLiteDatabase database = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(PlaylistEntity.NAME, playlist.getName());
+        values.put(PlaylistEntity.CREATED_DATE, playlist.getCreatedDate());
+        values.put(PlaylistEntity.NUMBER_OF_PLAYS, playlist.getNumberOfPlays());
+        long rowId = database.insert(PlaylistEntity.TABLE_NAME, null, values);
+        if (listener == null) return rowId;
+        if (rowId == -1) {
+            listener.onFailure(mContext.getString(R.string.error_create_new_playlist));
+        } else {
+            listener.onSuccess(true);
+        }
+        return rowId;
+    }
+
+    public void getPlaylists(OnLocalResponseListener<List<Playlist>> listener) {
+        SQLiteDatabase database = getReadableDatabase();
+        List<Playlist> playlists = new ArrayList<>();
+        Cursor cursor = database.query(
+                PlaylistEntity.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        while (cursor.moveToNext()) {
+            Playlist playlist = new Playlist();
+            playlist.setId(cursor.getInt(cursor.getColumnIndex(PlaylistEntity.ID)));
+            playlist.setName(cursor.getString(cursor.getColumnIndex(PlaylistEntity.NAME)));
+            playlist.setCreatedDate(cursor.getLong(cursor.getColumnIndex(PlaylistEntity.CREATED_DATE)));
+            playlist.setNumberOfPlays(cursor.getInt(cursor.getColumnIndex(PlaylistEntity.NUMBER_OF_PLAYS)));
+            playlists.add(playlist);
+        }
+        cursor.close();
+        listener.onSuccess(playlists);
+    }
+
     private ContentValues createValuesForTrack(Track track) {
         ContentValues values = new ContentValues();
         values.put(TrackEntity.ID, track.getId());
@@ -221,5 +282,63 @@ public class TrackDatabaseHelper extends SQLiteOpenHelper {
         values.put(TrackEntity.REQUEST_ID, track.getRequestId());
         values.put(TrackEntity.DESCRIPTION, track.getDescription());
         return values;
+    }
+
+    public void addTrackToNewPlaylist(Track track, Playlist playlist, OnLocalResponseListener<Boolean> listener) {
+        long playlistId = createNewPlaylist(playlist, null);
+        if (playlistId == -1) {
+            listener.onFailure(mContext.getString(R.string.error_create_new_playlist));
+            return;
+        }
+        playlist.setId((int) playlistId);
+        if (!isTrackInPlaylist(track, playlist)) {
+            addTrackToPlaylist(track, playlist);
+            listener.onSuccess(true);
+        } else {
+            listener.onFailure(mContext.getString(R.string.error_track_is_in_playlist));
+        }
+    }
+
+    public void addTrackToPlaylist(Track track, Playlist playlist) {
+        if (!isTrackExisted(track)) {
+            saveTrack(track);
+        }
+        SQLiteDatabase database = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(TrackPlaylistEntity.TRACK_ID, track.getId());
+        values.put(TrackPlaylistEntity.PLAYLIST_ID, playlist.getId());
+        database.insert(TrackPlaylistEntity.TABLE_NAME, null, values);
+    }
+
+    private boolean isTrackExisted(Track track) {
+        SQLiteDatabase database = getReadableDatabase();
+        Cursor cursor = database.query(
+                TrackEntity.TABLE_NAME,
+                null,
+                StringUtils.formatSingleWhereClause(TrackEntity.ID),
+                new String[]{track.getId()},
+                null,
+                null,
+                null
+        );
+        boolean isExisted = cursor.moveToNext();
+        cursor.close();
+        return isExisted;
+    }
+
+    private boolean isTrackInPlaylist(Track track, Playlist playlist) {
+        SQLiteDatabase database = getReadableDatabase();
+        Cursor cursor = database.query(
+                TrackPlaylistEntity.TABLE_NAME,
+                null,
+                StringUtils.formatDoubleWhereClause(TrackPlaylistEntity.TRACK_ID, TrackPlaylistEntity.PLAYLIST_ID),
+                new String[]{track.getId(), String.valueOf(playlist.getId())},
+                null,
+                null,
+                null
+        );
+        boolean isExisted = cursor.moveToNext();
+        cursor.close();
+        return isExisted;
     }
 }
