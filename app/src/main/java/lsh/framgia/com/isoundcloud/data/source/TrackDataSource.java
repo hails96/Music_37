@@ -3,6 +3,7 @@ package lsh.framgia.com.isoundcloud.data.source;
 import java.util.List;
 
 import lsh.framgia.com.isoundcloud.base.asynctask.BaseFetchingAsyncTask.OnResponseListener;
+import lsh.framgia.com.isoundcloud.data.model.Playlist;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 
 public interface TrackDataSource {
@@ -24,6 +25,10 @@ public interface TrackDataSource {
         void deleteTrackFromDatabase(Track track, OnLocalResponseListener<Track> listener);
 
         void deleteTrackFromStorage(Track track);
+
+        void createNewPlaylist(Playlist playlist, OnLocalResponseListener<Boolean> listener);
+
+        void getPlaylists(OnLocalResponseListener<List<Playlist>> listener);
     }
 
     interface RemoteDataSource {

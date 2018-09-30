@@ -3,6 +3,7 @@ package lsh.framgia.com.isoundcloud.data.repository;
 import java.util.List;
 
 import lsh.framgia.com.isoundcloud.base.asynctask.BaseFetchingAsyncTask;
+import lsh.framgia.com.isoundcloud.data.model.Playlist;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.data.source.TrackDataSource;
 
@@ -81,5 +82,15 @@ public class TrackRepository implements TrackDataSource.LocalDataSource, TrackDa
     @Override
     public void deleteTrackFromStorage(Track track) {
         mTrackLocalDataSource.deleteTrackFromStorage(track);
+    }
+
+    @Override
+    public void createNewPlaylist(Playlist playlist, TrackDataSource.OnLocalResponseListener<Boolean> listener) {
+        mTrackLocalDataSource.createNewPlaylist(playlist, listener);
+    }
+
+    @Override
+    public void getPlaylists(TrackDataSource.OnLocalResponseListener<List<Playlist>> listener) {
+        mTrackLocalDataSource.getPlaylists(listener);
     }
 }

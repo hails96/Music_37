@@ -20,6 +20,7 @@ public class Constant {
     public static final String FORMAT_SINGLE_WHERE_CLAUSE = "%s = ?";
     public static final String FORMAT_DOUBLE_WHERE_CLAUSE = "%s = ? AND %s = ?";
     public static final String FORMAT_FILE_PATH = "%s/%s.mp3";
+    public static final String FORMAT_DATE = "dd/MM/yyyy";
 
     public static final String NEW_LINE = "\n";
     public static final String TEXT_LARGE = "large";

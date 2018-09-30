@@ -1,5 +1,7 @@
 package lsh.framgia.com.isoundcloud.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -53,5 +55,12 @@ public class StringUtils {
 
     public static boolean isEmpty(String s) {
         return s == null || s.isEmpty();
+    }
+
+    public static String formatMillisToDate(long createdDate, String dateFormat) {
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat, Locale.ENGLISH);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(createdDate);
+        return formatter.format(calendar.getTime());
     }
 }
