@@ -88,6 +88,7 @@ public class DownloadedTrackFragment extends BaseFragment<DownloadedTrackContrac
         mTrackAdapter.getTracks().clear();
         mTrackAdapter.addAll(tracks);
         mTrackAdapter.notifyDataSetChanged();
+        mOnPlaylistChangeListener.onPlaylistChange(mTrackAdapter.getTracks());
     }
 
     @Override

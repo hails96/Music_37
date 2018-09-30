@@ -22,6 +22,10 @@ public class BottomMenuDialogContract {
         void deleteTrackFailed(String msg);
 
         void getPlaylistsSuccess(List<Playlist> playlists);
+
+        void addedTrackSuccessfully();
+
+        void failedToAddTrack(String msg);
     }
 
     interface Presenter extends IPresenter<View> {
@@ -34,5 +38,7 @@ public class BottomMenuDialogContract {
         void deleteTrackFromDatabase(Track track);
 
         void addTrackToNewPlaylist(Track track, String playlistName);
+
+        void addTrackToExistingPlaylist(Track track, Playlist playlist);
     }
 }
