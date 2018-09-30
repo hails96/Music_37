@@ -17,14 +17,19 @@ import java.util.List;
 import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.base.mvp.BaseFragment;
 import lsh.framgia.com.isoundcloud.data.model.Playlist;
+import lsh.framgia.com.isoundcloud.data.repository.TrackRepository;
+import lsh.framgia.com.isoundcloud.data.source.local.TrackLocalDataSource;
+import lsh.framgia.com.isoundcloud.data.source.remote.TrackRemoteDataSource;
 import lsh.framgia.com.isoundcloud.screen.main.OnToolbarChangeListener;
+import lsh.framgia.com.isoundcloud.screen.main.playlisttrack.PlaylistTrackFragment;
+import lsh.framgia.com.isoundcloud.screen.main.playlisttrack.PlaylistTrackPresenter;
 import lsh.framgia.com.isoundcloud.util.StringUtils;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class PlaylistFragment extends BaseFragment<PlaylistContract.Presenter>
-        implements PlaylistContract.View, View.OnClickListener {
+        implements PlaylistContract.View, View.OnClickListener, OnPlaylistClickListener {
 
     private RecyclerView mRecyclerPlaylist;
     private FloatingActionButton mFabAddPlaylist;
@@ -59,6 +64,11 @@ public class PlaylistFragment extends BaseFragment<PlaylistContract.Presenter>
         setupPreferences();
         setupRecyclerPlaylist();
         setupListeners();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         mPresenter.getPlaylists();
     }
 
@@ -93,6 +103,17 @@ public class PlaylistFragment extends BaseFragment<PlaylistContract.Presenter>
     }
 
     @Override
+    public void onPlaylistClick(Playlist playlist) {
+        PlaylistTrackFragment fragment = PlaylistTrackFragment.newInstance();
+        fragment.setPlaylist(playlist);
+        PlaylistTrackPresenter presenter = new PlaylistTrackPresenter(
+                TrackRepository.getInstance(TrackRemoteDataSource.getInstance(),
+                        TrackLocalDataSource.getInstance(getContext())));
+        presenter.setView(fragment);
+        replaceFragment(R.id.frame_container, fragment, true, null);
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         if (mOnToolbarChangeListener == null) return;
@@ -103,7 +124,7 @@ public class PlaylistFragment extends BaseFragment<PlaylistContract.Presenter>
         mRecyclerPlaylist.setHasFixedSize(true);
         mRecyclerPlaylist.setLayoutManager(new LinearLayoutManager(getContext()));
         mPlaylists = new ArrayList<>();
-        mPlaylistAdapter = new PlaylistAdapter(getContext(), mPlaylists);
+        mPlaylistAdapter = new PlaylistAdapter(getContext(), mPlaylists, this);
         mRecyclerPlaylist.setAdapter(mPlaylistAdapter);
     }
 

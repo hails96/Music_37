@@ -33,6 +33,10 @@ public interface TrackDataSource {
         void addTrackToNewPlaylist(Track track, Playlist playlist, OnLocalResponseListener<Boolean> listener);
 
         void addTrackToExistingPlaylist(Track track, Playlist playlist, OnLocalResponseListener<Boolean> listener);
+
+        void getTracksFromPlaylist(Playlist playlist, OnLocalResponseListener<List<Track>> listener);
+
+        void addNumberOfPlays(Playlist playlist);
     }
 
     interface RemoteDataSource {

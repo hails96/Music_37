@@ -103,4 +103,14 @@ public class TrackRepository implements TrackDataSource.LocalDataSource, TrackDa
     public void addTrackToExistingPlaylist(Track track, Playlist playlist, TrackDataSource.OnLocalResponseListener<Boolean> listener) {
         mTrackLocalDataSource.addTrackToExistingPlaylist(track, playlist, listener);
     }
+
+    @Override
+    public void getTracksFromPlaylist(Playlist playlist, TrackDataSource.OnLocalResponseListener<List<Track>> listener) {
+        mTrackLocalDataSource.getTracksFromPlaylist(playlist, listener);
+    }
+
+    @Override
+    public void addNumberOfPlays(Playlist playlist) {
+        mTrackLocalDataSource.addNumberOfPlays(playlist);
+    }
 }
