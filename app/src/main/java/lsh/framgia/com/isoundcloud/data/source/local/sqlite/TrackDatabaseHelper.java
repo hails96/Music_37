@@ -292,22 +292,29 @@ public class TrackDatabaseHelper extends SQLiteOpenHelper {
         }
         playlist.setId((int) playlistId);
         if (!isTrackInPlaylist(track, playlist)) {
-            addTrackToPlaylist(track, playlist);
+            addTrackToPlaylist(track, playlist, null);
             listener.onSuccess(true);
         } else {
             listener.onFailure(mContext.getString(R.string.error_track_is_in_playlist));
         }
     }
 
-    public void addTrackToPlaylist(Track track, Playlist playlist) {
+    public void addTrackToPlaylist(Track track, Playlist playlist, OnLocalResponseListener<Boolean> listener) {
         if (!isTrackExisted(track)) {
             saveTrack(track);
+        }
+        if (isTrackInPlaylist(track, playlist)) {
+            listener.onFailure(mContext.getString(R.string.error_track_is_in_playlist));
+            return;
         }
         SQLiteDatabase database = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(TrackPlaylistEntity.TRACK_ID, track.getId());
         values.put(TrackPlaylistEntity.PLAYLIST_ID, playlist.getId());
         database.insert(TrackPlaylistEntity.TABLE_NAME, null, values);
+        if (listener != null) {
+            listener.onSuccess(true);
+        }
     }
 
     private boolean isTrackExisted(Track track) {

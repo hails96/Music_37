@@ -89,4 +89,9 @@ public class TrackLocalDataSource implements TrackDataSource.LocalDataSource {
     public void addTrackToNewPlaylist(Track track, Playlist playlist, OnLocalResponseListener<Boolean> listener) {
         mTrackDatabaseHelper.addTrackToNewPlaylist(track, playlist, listener);
     }
+
+    @Override
+    public void addTrackToExistingPlaylist(Track track, Playlist playlist, OnLocalResponseListener<Boolean> listener) {
+        mTrackDatabaseHelper.addTrackToPlaylist(track, playlist, listener);
+    }
 }

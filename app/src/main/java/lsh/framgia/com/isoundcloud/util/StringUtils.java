@@ -19,6 +19,10 @@ public class StringUtils {
         return String.format(Locale.ENGLISH, Constant.FORMAT_STREAM_URL, uri, BuildConfig.ApiKey);
     }
 
+    public static String formatDownloadPath(String uri) {
+        return String.format(Locale.ENGLISH, Constant.FORMAT_STREAM_URL, uri, BuildConfig.ApiKey);
+    }
+
     public static String formatSearchingTrackUrl(String query, int offset, int limit) {
         return String.format(Locale.ENGLISH, Constant.FORMAT_SEARCH_URL,
                 BuildConfig.ApiKey, query, offset, limit);

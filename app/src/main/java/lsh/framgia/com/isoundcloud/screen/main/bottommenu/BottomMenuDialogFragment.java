@@ -11,6 +11,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -198,16 +200,24 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
         mPlaylists = playlists;
     }
 
+    @Override
+    public void addedTrackSuccessfully() {
+        Toast.makeText(MusicApplication.getAppContext(), MusicApplication.getAppContext().getString(
+                R.string.msg_add_track_to_new_playlist), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void failedToAddTrack(String msg) {
+        Toast.makeText(MusicApplication.getAppContext(), msg, Toast.LENGTH_SHORT).show();
+    }
+
     private void handleAddToPlaylist() {
         dismiss();
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_to_playlist, null);
-        Spinner spinnerPlaylist = dialogView.findViewById(R.id.spinner_existed_playlist);
-        if (spinnerPlaylist != null) {
-            List<String> names = getPlaylistNames();
-            spinnerPlaylist.setAdapter(new ArrayAdapter<>(MusicApplication.getAppContext(),
-                    android.R.layout.simple_spinner_dropdown_item, names));
-        }
+        final Spinner spinnerPlaylist = dialogView.findViewById(R.id.spinner_existed_playlist);
+        final EditText editTextPlaylist = dialogView.findViewById(R.id.edit_playlist);
+        setupAddToPlaylistView(spinnerPlaylist, editTextPlaylist);
         builder
                 .setTitle(getString(R.string.label_add_to_playlist))
                 .setIcon(R.drawable.ic_playlist_add)
@@ -215,11 +225,12 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
                 .setPositiveButton(R.string.text_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        EditText editNewPlaylist = ((AlertDialog) dialog).findViewById(R.id.edit_playlist);
-                        if (editNewPlaylist != null && !StringUtils.isEmpty(editNewPlaylist.getText().toString())) {
-                            mPresenter.addTrackToNewPlaylist(mTrack, editNewPlaylist.getText().toString());
+                        if (editTextPlaylist != null && !StringUtils.isEmpty(editTextPlaylist.getText().toString())) {
+                            mPresenter.addTrackToNewPlaylist(mTrack, editTextPlaylist.getText().toString());
                         } else {
-                            // TODO: add this track to an existing playlist
+                            if (spinnerPlaylist == null) return;
+                            mPresenter.addTrackToExistingPlaylist(mTrack,
+                                    mPlaylists.get(spinnerPlaylist.getSelectedItemPosition()));
                         }
                     }
                 })
@@ -230,6 +241,37 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
                     }
                 });
         builder.create().show();
+    }
+
+    private void setupAddToPlaylistView(final Spinner spinnerPlaylist, EditText editTextPlaylist) {
+        if (spinnerPlaylist != null) {
+            List<String> names = getPlaylistNames();
+            spinnerPlaylist.setAdapter(new ArrayAdapter<>(MusicApplication.getAppContext(),
+                    android.R.layout.simple_spinner_dropdown_item, names));
+        }
+        if (spinnerPlaylist == null) return;
+        editTextPlaylist.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() > 0) {
+                    spinnerPlaylist.setEnabled(false);
+                    spinnerPlaylist.setAlpha(0.5f);
+                } else {
+                    spinnerPlaylist.setEnabled(true);
+                    spinnerPlaylist.setAlpha(1.0f);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     private List<String> getPlaylistNames() {
@@ -262,7 +304,9 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
 
     private void downloadTrack() {
         TrackDownloadManager.getInstance(getContext(), this).downloadTrack(mTrack);
-        mTrack.setDownloadPath(StringUtils.formatFilePath(Environment.DIRECTORY_MUSIC, mTrack.getTitle()));
+        mTrack.setDownloadPath(StringUtils.formatFilePath(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath(),
+                mTrack.getTitle()));
         mPresenter.saveTrack(mTrack);
         dismiss();
     }

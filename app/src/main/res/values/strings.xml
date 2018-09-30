@@ -47,5 +47,7 @@
     <string name="error_empty_playlist_name">You must enter a name for the playlist.</string>
     <string name="msg_created_playlist_successfully">Created playlist successfully.</string>
     <string name="error_create_new_playlist">Failed to create new playlist.</string>
+    <string name="error_failed_to_add_track">Failed to add track to new playlist.</string>
     <string name="error_track_is_in_playlist">You already had this track in the playlist.</string>
+    <string name="msg_add_track_to_new_playlist">Added track to the playlist successfully.</string>
 </resources>

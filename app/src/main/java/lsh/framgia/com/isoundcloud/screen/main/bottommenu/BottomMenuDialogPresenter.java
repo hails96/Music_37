@@ -1,7 +1,5 @@
 package lsh.framgia.com.isoundcloud.screen.main.bottommenu;
 
-import android.util.Log;
-
 import java.util.List;
 
 import lsh.framgia.com.isoundcloud.constant.MenuType;
@@ -94,12 +92,27 @@ public class BottomMenuDialogPresenter implements BottomMenuDialogContract.Prese
         mTrackRepository.addTrackToNewPlaylist(track, playlist, new TrackDataSource.OnLocalResponseListener<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                Log.d("BottomMenu", "onSuccess: " + result);
+                mView.addedTrackSuccessfully();
             }
 
             @Override
             public void onFailure(String msg) {
-                Log.d("BottomMenu", "onFailure: " + msg);
+                mView.failedToAddTrack(msg);
+            }
+        });
+    }
+
+    @Override
+    public void addTrackToExistingPlaylist(Track track, Playlist playlist) {
+        mTrackRepository.addTrackToExistingPlaylist(track, playlist, new TrackDataSource.OnLocalResponseListener<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                mView.addedTrackSuccessfully();
+            }
+
+            @Override
+            public void onFailure(String msg) {
+                mView.failedToAddTrack(msg);
             }
         });
     }
