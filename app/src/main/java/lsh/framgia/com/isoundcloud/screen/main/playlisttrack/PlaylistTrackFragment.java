@@ -104,6 +104,7 @@ public class PlaylistTrackFragment extends BaseFragment<PlaylistTrackContract.Pr
 
     private void setupFabPlay() {
         mFabPlay = mRootView.findViewById(R.id.fab_play);
+        mFabPlay.setVisibility(View.VISIBLE);
         mFabPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
