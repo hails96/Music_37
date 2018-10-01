@@ -1,5 +1,6 @@
 package lsh.framgia.com.isoundcloud.screen.main;
 
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -7,6 +8,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -50,6 +52,8 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
     private ImageView mImageNext;
     private ProgressBar mProgressBarLoading;
 
+    private ObjectAnimator mObjectAnimator;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -63,6 +67,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
         setupToolbar();
         setupListeners();
         replaceHomeFragment();
+        setupObjectAnimator(mImageArtwork);
     }
 
     @Override
@@ -81,20 +86,26 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
         if (mMusicService == null) return;
         mMusicService.setOnMediaPlayerStatusListener(this);
         setupMiniPlayer(mMusicService.getCurrentTrack());
+        if (!mObjectAnimator.isStarted() && mMusicService.getTrackState() == TrackState.PREPARED) {
+            mObjectAnimator.start();
+        }
     }
 
     @Override
     public void onTrackPrepared(Track track) {
         setupMiniPlayer(track);
+        mObjectAnimator.start();
     }
 
     @Override
     public void onTrackPaused() {
+        mObjectAnimator.pause();
         mImagePlayPause.setImageResource(R.drawable.ic_play_white);
     }
 
     @Override
     public void onTrackResumed() {
+        mObjectAnimator.resume();
         mImagePlayPause.setImageResource(R.drawable.ic_pause_white);
     }
 
@@ -121,7 +132,7 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
 
     @Override
     public void onTrackCompleted() {
-
+        mObjectAnimator.pause();
     }
 
     @Override
@@ -276,6 +287,17 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
                 .load(track.getArtworkUrl())
                 .apply(options)
                 .into(mImageArtwork);
+        mObjectAnimator.pause();
+        mImageArtwork.setRotation(0);
+    }
+
+    private void setupObjectAnimator(ImageView imageView) {
+        if (mObjectAnimator == null) {
+            mObjectAnimator = ObjectAnimator.ofFloat(imageView, "rotation", 0, 360);
+            mObjectAnimator.setDuration(30000);
+            mObjectAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+            mObjectAnimator.setInterpolator(new LinearInterpolator());
+        }
     }
 
     private void setupListeners() {
