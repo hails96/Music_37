@@ -18,4 +18,6 @@ public interface OnMediaPlayerStatusListener {
     void onLoopModeChanged(@LoopMode int loopMode);
 
     void onShuffleModeChanged(@ShuffleMode int shuffleMode);
+
+    void onTrackCompleted();
 }

@@ -1,6 +1,7 @@
 package lsh.framgia.com.isoundcloud.screen.player;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -67,6 +69,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
     private AudioManager mAudioManager;
     private RequestOptions mBackGroundOptions;
     private RequestOptions mArtworkOptions;
+    private ObjectAnimator mObjectAnimator;
     private Track mTrack;
     private OnCurrentTrackChangeListener mOnCurrentTrackChangeListener;
 
@@ -97,6 +100,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         playerPresenter.setView(this);
         setupPreferences();
         setupListener();
+        setupObjectAnimator(mImageArtwork);
         setupOptions();
         setupView(mTrack);
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -127,18 +131,26 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
 
     @Override
     public void onTrackPrepared(Track track) {
+        mObjectAnimator.start();
         updatePlayPauseView(mMusicService.getTrackState());
         runOnUiThread(mRunnable);
     }
 
     @Override
     public void onTrackPaused() {
+        mObjectAnimator.pause();
         mImagePlayPause.setImageResource(R.drawable.ic_play);
     }
 
     @Override
     public void onTrackResumed() {
+        mObjectAnimator.resume();
         mImagePlayPause.setImageResource(R.drawable.ic_pause);
+    }
+
+    @Override
+    public void onTrackCompleted() {
+        mObjectAnimator.pause();
     }
 
     @Override
@@ -358,6 +370,8 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
                 StringUtils.getOriginalUrl(track.getArtworkUrl()));
         loadImageWithGlide(mArtworkOptions, mImageArtwork,
                 StringUtils.getOriginalUrl(track.getArtworkUrl()));
+        mObjectAnimator.pause();
+        mImageArtwork.setRotation(0);
     }
 
     private void displayTrackInfo(Track track) {
@@ -402,8 +416,8 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         SeekBar seekBar = new SeekBar(this);
         seekBar.setPadding(50, 20, 50, 20);
-        seekBar.setMax(mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-        seekBar.setProgress(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+        seekBar.setMax(mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) * 10);
+        seekBar.setProgress(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC) * 10);
         builder
                 .setTitle(getString(R.string.text_adjust_volume))
                 .setIcon(R.drawable.ic_volume_level)
@@ -411,7 +425,7 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress / 10, 0);
             }
 
             @Override
@@ -447,6 +461,15 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
         if (mTrack == null) return;
         mTrack.setIsFavorite(!mTrack.isFavorite());
         mPresenter.updateFavorite(mTrack);
+    }
+
+    private void setupObjectAnimator(ImageView imageView) {
+        if (mObjectAnimator == null) {
+            mObjectAnimator = ObjectAnimator.ofFloat(imageView, "rotation", 0, 360);
+            mObjectAnimator.setDuration(30000);
+            mObjectAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+            mObjectAnimator.setInterpolator(new LinearInterpolator());
+        }
     }
 
     private void checkWriteStoragePermission() {
