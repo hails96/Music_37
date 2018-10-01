@@ -50,4 +50,5 @@
     <string name="error_failed_to_add_track">Failed to add track to new playlist.</string>
     <string name="error_track_is_in_playlist">You already had this track in the playlist.</string>
     <string name="msg_add_track_to_new_playlist">Added track to the playlist successfully.</string>
+    <string name="error_cannot_delete_playing_track">You cannot delete a playing track.</string>
 </resources>
