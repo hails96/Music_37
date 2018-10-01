@@ -127,6 +127,9 @@ public class PlayerActivity extends BaseActivity<PlayerContract.Presenter>
             updatePlayPauseView(mMusicService.getTrackState());
             mHandler.post(mRunnable);
         }
+        if (!mObjectAnimator.isStarted() && mMusicService.getTrackState() == TrackState.PREPARED) {
+            mObjectAnimator.start();
+        }
     }
 
     @Override
