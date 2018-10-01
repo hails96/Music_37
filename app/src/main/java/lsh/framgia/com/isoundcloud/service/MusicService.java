@@ -197,6 +197,11 @@ public class MusicService extends Service {
         mOnMediaPlayerStatusListener.onNewTrackRequested(track);
     }
 
+    public void onTrackCompleted() {
+        if (mOnMediaPlayerStatusListener == null) return;
+        mOnMediaPlayerStatusListener.onTrackCompleted();
+    }
+
     public void onTrackError() {
         if (mOnMediaPlayerStatusListener == null) return;
         mOnMediaPlayerStatusListener.onTrackError();

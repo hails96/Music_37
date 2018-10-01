@@ -61,6 +61,7 @@ public class MediaPlayerManager implements MediaPlayer.OnPreparedListener,
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        mMusicService.onTrackCompleted();
         setTrackState(TrackState.INVALID);
         if (mLoopMode == LoopMode.OFF && mCurrentTrackPosition == getPlaylist().size() - 1) return;
 
