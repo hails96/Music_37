@@ -43,43 +43,52 @@
         android:layout_marginStart="@dimen/dp_50"
         android:elevation="@dimen/dp_4"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toTopOf="@id/text_track_title"
+        app:layout_constraintBottom_toTopOf="@id/constraint_track_info"
         app:layout_constraintDimensionRatio="H,1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="UnusedAttribute" />
 
-    <TextView
-        android:id="@+id/text_track_title"
-        android:layout_width="0dp"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraint_track_info"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/dp_20"
-        android:layout_marginStart="@dimen/dp_20"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:maxLines="1"
-        android:textColor="@android:color/black"
-        android:textSize="@dimen/sp_18"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/text_track_artist"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/image_artwork" />
-
-    <TextView
-        android:id="@+id/text_track_artist"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/dp_20"
-        android:layout_marginStart="@dimen/dp_20"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:maxLines="1"
         app:layout_constraintBottom_toTopOf="@id/seek_bar_duration"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_track_title" />
+        app:layout_constraintTop_toBottomOf="@id/image_artwork">
+
+        <TextView
+            android:id="@+id/text_track_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:layout_marginStart="@dimen/dp_20"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_track_artist"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_15"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_track_title" />
+    </android.support.constraint.ConstraintLayout>
 
     <TextView
         android:id="@+id/text_current_duration"
@@ -99,7 +108,7 @@
         app:layout_constraintBottom_toTopOf="@id/image_play"
         app:layout_constraintEnd_toStartOf="@id/text_full_duration"
         app:layout_constraintStart_toEndOf="@id/text_current_duration"
-        app:layout_constraintTop_toBottomOf="@id/text_track_artist" />
+        app:layout_constraintTop_toBottomOf="@id/constraint_track_info" />
 
     <TextView
         android:id="@+id/text_full_duration"
