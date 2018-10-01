@@ -186,6 +186,10 @@ public class MainActivity extends BaseActivity<MainContract.Presenter> implement
         mPresenter.updateDownloadedTrack(requestId);
     }
 
+    public Track getCurrentTrack() {
+        return mMusicService.getCurrentTrack();
+    }
+
     public void setPlaylist(List<Track> tracks) {
         mMusicService.setPlaylist(tracks);
     }

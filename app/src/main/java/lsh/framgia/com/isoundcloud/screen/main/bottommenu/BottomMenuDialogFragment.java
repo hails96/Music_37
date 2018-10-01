@@ -31,6 +31,7 @@ import lsh.framgia.com.isoundcloud.R;
 import lsh.framgia.com.isoundcloud.data.model.Playlist;
 import lsh.framgia.com.isoundcloud.data.model.Track;
 import lsh.framgia.com.isoundcloud.data.source.remote.TrackDownloadManager;
+import lsh.framgia.com.isoundcloud.screen.main.MainActivity;
 import lsh.framgia.com.isoundcloud.util.DialogUtils;
 import lsh.framgia.com.isoundcloud.util.StringUtils;
 
@@ -52,11 +53,23 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
     private ImageView mImagePlaylist;
     private ImageView mImageDelete;
 
+    private MainActivity mActivity;
     private Track mTrack;
     private List<Playlist> mPlaylists;
 
     public static BottomMenuDialogFragment newInstance() {
         return new BottomMenuDialogFragment();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mActivity = (MainActivity) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " is not MainActivity");
+        }
     }
 
     @Nullable
@@ -340,6 +353,12 @@ public class BottomMenuDialogFragment extends BottomSheetDialogFragment
     }
 
     private void handleDeleteTrack() {
+        if (mActivity.getCurrentTrack().equals(mTrack)) {
+            Toast.makeText(mActivity, getString(R.string.error_cannot_delete_playing_track),
+                    Toast.LENGTH_SHORT).show();
+            dismiss();
+            return;
+        }
         mPresenter.deleteTrackFromDatabase(mTrack);
     }
 
